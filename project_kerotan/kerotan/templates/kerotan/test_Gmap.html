@@ -1,10 +1,6 @@
 {% extends "base.html" %}
 
 
-
-
-
-
 {% block title %}ここにページのタイトル書くよ！{% endblock title %}
 
 {% block content %}
@@ -12,10 +8,24 @@
 <html>
   <head>
     <form>
-        <input type="text" value="東京都新宿区西新宿8-17-1" id="origin">
-        <input type="text" value="" id="destination">
-        <input type="button" value="地図検索" id="button">
+        <table>
+            <tr>
+                <td>出発地</td>
+                <td><input type="text" value="東京都新宿区西新宿8-17-1" id="origin"></td>
+            </tr>
+            <tr>
+                <td>目的地</td>
+                <td><input type="text" value="" id="destination"></td>
+            </tr>
+        </table>
+            <input type="button" value="地図検索" id="button">
+            <div id="origin_ido" hidden></div>
+            <div id="origin_keido" hidden></div>
+            <div id="destination_ido"></div>
+            <div id="destination_keido"></div>
     </form>
+      <div id="directions-panel"></div>
+      <div id="route"></div>
       <div class="map-embed">
 	    <div id="map-canvas" style="width:500px; height:300px">ここに地図が表示されます</div>
       </div>
@@ -62,7 +72,6 @@
         var canvas = document.getElementById( 'map-canvas' ) ;
 
         // 中心の位置座標を指定する
-        <!--var latlng = new google.maps.LatLng( 35.792621 , 139.806513 );-->
         <!--新宿グランドタワー-->
         var latlng = new google.maps.LatLng(35.695803589598675 , 139.6903158724308 );
 
@@ -70,6 +79,7 @@
         var mapOptions = {
             zoom: 16 ,				// ズーム値
             center: latlng ,		// 中心座標 [latlng]
+            mapTypeId: google.maps.MapTypeId.ROADMAP
         };
 
         // [canvas]に、[mapOptions]の内容の、地図のインスタンス([map])を作成する
@@ -123,10 +133,11 @@ function codeAddress(origin) {
 
   // geocoder.geocode()メソッドを実行
   geocoder.geocode( { 'address': origin}, function(results, status) {
-
+    <!--console.log(status);-->
     // ジオコーディングが成功した場合
     if (status == google.maps.GeocoderStatus.OK) {
     <!--console.log(status);-->
+    <!--alert( results[ 0 ].geometry.location );-->
       // google.maps.Map()コンストラクタに定義されているsetCenter()メソッドで
       // 変換した緯度・経度情報を地図の中心に表示
       map.setCenter(results[0].geometry.location);
@@ -151,6 +162,7 @@ function codeAddress(origin) {
 }
 
 
+
 // ボタンに指定したid要素を取得
 var button = document.getElementById("button");
 
@@ -161,58 +173,164 @@ button.onclick = function() {
   var address = document.getElementById("origin").value;
   var destination = document.getElementById("destination").value;
   console.log(address);
+  console.log(destination);
   // 取得した住所を引数に指定してcodeAddress()関数を実行
   codeAddress(address);
 
 
 
+    var geocoder = new google.maps.Geocoder();
+    var address = document.getElementById("origin").value;
+        geocoder.geocode( { 'address': address}, function(results, status){
+              <!--callback(results[0].geometry.location.lat());-->
+              document.getElementById('origin_ido').innerText = results[0].geometry.location.lat();
+              document.getElementById('origin_keido').innerText = results[0].geometry.location.lng();
+              <!--console.log(results[0].geometry.location);-->
+              <!--alert( results[ 0 ].geometry.location.lat());-->
+              <!--console.log(results[0].geometry.location.lat());-->
+      });
+
+    var geocoder = new google.maps.Geocoder();
+    var address = document.getElementById("destination").value;
+        geocoder.geocode( { 'address': address}, function(results, status){
+              <!--callback(results[0].geometry.location.lat());-->
+              document.getElementById('destination_ido').innerText = results[0].geometry.location.lat();
+              document.getElementById('destination_keido').innerText = results[0].geometry.location.lng();
+              <!--console.log(results[0].geometry.location);-->
+              <!--alert( results[ 0 ].geometry.location.lat());-->
+              <!--console.log(results[0].geometry.location.lat());-->
+      });
 
 
-//経路検索(テスト)
-        rendererOptions = {
-        draggable: true,
-        preserveViewport:false
-        };
-        var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-        var directionsService = new google.maps.DirectionsService();
-        var map;
+
+    //経度と緯度を求める関数
+    function geocodeAddress(callback)
+    {
+        var geocoder = new google.maps.Geocoder();
+        var address = document.getElementById('origin').value;
+        geocoder.geocode({'address': address}, function(results, status) {
+            if (status === google.maps.GeocoderStatus.OK) {
+                callback({"lat":results[0].geometry.location.lat(), "lng":results[0].geometry.location.lng()});
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    }
+
+    function testResults(geoCodeResults)
+    {
+        // ジオコーディング結果を用いた処理
+        console.log(geoCodeResults.lat);
+        return geoCodeResults.lat;
+    }
+
+    geocodeAddress(testResults);
 
 
-         var zoom = 7;
-         var mapTypeId = google.maps.MapTypeId.ROADMAP
-
-         var opts = {
-            zoom: zoom,
-            mapTypeId: mapTypeId
-         };
-         map = new google.maps.Map(document.getElementById("map-canvas"),opts);
-         directionsDisplay.setMap(map);
-
-         google.maps.event.addListener(directionsDisplay, 'directions_changed', function(){
-         });
-         calcRoute();
 
 
-          //二点間の経路(パラメータを決め打ち)
-        function calcRoute() {
-         var request = {
-         origin: address,
-         destination: destination,
-         travelMode: google.maps.DirectionsTravelMode.WALKING,
-         unitSystem: google.maps.DirectionsUnitSystem.METRIC,
-         optimizeWaypoints: true,
-         avoidHighways: false,
-         avoidTolls: false
-         };
-         directionsService.route(request,
-          function(response,status){
-          if (status == google.maps.DirectionsStatus.OK){
-          directionsDisplay.setDirections(response);}
-          });
-        }
+
+    <!--console.log(document.getElementById('keido').value);-->
+    <!--var a;-->
+    <!--var geoCodeResults = geo_value(a);-->
+    <!--console.log(a);-->
+
+    <!--console.log(geocoder.geocode.result[0]);-->
+
+    <!--//ルート案内の表示-->
+    <!--var directions = new GDirections(map, document.getElementById('route'));-->
+    <!--directions.load('from: address to: destination', {locale: 'ja_JP'});-->
+
+
+
+
+        <!--rendererOptions = {-->
+        <!--draggable: true,-->
+        <!--preserveViewport:false-->
+        <!--};-->
+        <!--var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);-->
+        <!--var directionsService = new google.maps.DirectionsService();-->
+        <!--var map;-->
+
+
+         <!--var zoom = 7;-->
+         <!--var mapTypeId = google.maps.MapTypeId.ROADMAP-->
+
+         <!--var opts = {-->
+            <!--zoom: zoom,-->
+            <!--mapTypeId: mapTypeId-->
+         <!--};-->
+         <!--map = new google.maps.Map(document.getElementById("map-canvas"),opts);-->
+         <!--directionsDisplay.setMap(map);-->
+
+         <!--google.maps.event.addListener(directionsDisplay, 'directions_changed', function(){-->
+         <!--});-->
+         <!--calcRoute();-->
+
+
+          <!--//二点間の経路()-->
+        <!--function calcRoute() {-->
+         <!--var request = {-->
+         <!--origin: address,-->
+         <!--destination: destination,-->
+         <!--travelMode: google.maps.DirectionsTravelMode.TRANSIT,-->
+         <!--&lt;!&ndash;travelMode: google.maps.DirectionsTravelMode.WALKING,&ndash;&gt;-->
+         <!--unitSystem: google.maps.DirectionsUnitSystem.METRIC,-->
+         <!--optimizeWaypoints: true,-->
+         <!--avoidHighways: false,-->
+         <!--avoidTolls: false-->
+         <!--};-->
+         <!--directionsService.route(request,-->
+          <!--function(response,status){-->
+          <!--if (status == google.maps.DirectionsStatus.OK){-->
+          <!--directionsDisplay.setDirections(response);}-->
+          <!--});-->
+          <!--directionsDisplay.setPanel(document.getElementById("directions-panel"));-->
+        <!--}-->
+
+
+
+
+
+        <!--rendererOptions = {-->
+        <!--map: map,-->
+        <!--draggable: true,-->
+        <!--preserveViewport:false-->
+        <!--};-->
+        <!--var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);-->
+        <!--var directionsService = new google.maps.DirectionsService();-->
+        <!--var map;-->
+
+
+         <!--var zoom = 7;-->
+         <!--var mapTypeId = google.maps.MapTypeId.ROADMAP-->
+
+         <!--var opts = {-->
+            <!--zoom: zoom,-->
+            <!--mapTypeId: mapTypeId-->
+         <!--};-->
+         <!--map = new google.maps.Map(document.getElementById("map-canvas"),opts);-->
+         <!--directionsDisplay.setMap(map);-->
+
+         <!--google.maps.event.addListener(directionsDisplay, 'directions_changed', function(){-->
+         <!--});-->
+
+
+    <!--var request={-->
+      <!--origin:address,	/* 出発地点 */-->
+      <!--destination:destination,	/* 到着地点 */-->
+      <!--travelMode: google.maps.DirectionsTravelMode.WALKING,-->
+    <!--};-->
+    <!--directionsService.route(request, function(response, status) {-->
+      <!--if (status==google.maps.DirectionsStatus.OK) {-->
+        <!--directionsDisplay.setDirections(response);-->
+      <!--}-->
+    <!--});-->
+
+    <!--directionsDisplay.setPanel(document.getElementById("directions-panel"));-->
+
 
 }
-
     </script>
 
   </body>
