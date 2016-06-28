@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+
+
+
+
+
+{% block title %}ここにページのタイトル書くよ！{% endblock title %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <form>
+        <input type="text" value="東京都新宿区西新宿8-17-1" id="origin">
+        <input type="text" value="" id="destination">
+        <input type="button" value="地図検索" id="button">
+    </form>
+      <div class="map-embed">
+	    <div id="map-canvas" style="width:500px; height:300px">ここに地図が表示されます</div>
+      </div>
+          <style type="text/css">
+            .map-embed
+            {
+                max-width: 100% ;
+                height: 0 ;
+                margin: 0 ;
+                padding: 0 0 56.25% ;
+
+                overflow: hidden ;
+
+                position: relative ;
+                top: 0 ;
+                left: 0 ;
+            }
+
+            .map-embed > div
+            {
+                position: absolute ;
+                top: 0 ;
+                left: 200px ;
+
+                width: 80% ;
+                height: 100% ;
+
+                margin: 0 ;
+                padding: 0 ;
+            }
+
+            .map-embed img
+            {
+                max-width: none ;
+            }
+    </style>
+      <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+  </head>
+  <body>
+  <!--<body onload="initialize()">-->
+<!--<div id="map_canvas" style="width:500px; height:300px"></div>-->
+    <script type="text/javascript">
+        // キャンパスの要素を取得する
+        var canvas = document.getElementById( 'map-canvas' ) ;
+
+        // 中心の位置座標を指定する
+        <!--var latlng = new google.maps.LatLng( 35.792621 , 139.806513 );-->
+        <!--新宿グランドタワー-->
+        var latlng = new google.maps.LatLng(35.695803589598675 , 139.6903158724308 );
+
+        // 地図のオプションを設定する
+        var mapOptions = {
+            zoom: 16 ,				// ズーム値
+            center: latlng ,		// 中心座標 [latlng]
+        };
+
+        // [canvas]に、[mapOptions]の内容の、地図のインスタンス([map])を作成する
+        var map = new google.maps.Map( canvas , mapOptions ) ;
+
+        // マーカーのインスタンスは配列で管理しよう
+        var markers = [] ;
+
+        // マーカーのインスタンスを作成する
+        markers[0] = new google.maps.Marker({
+            map: map ,
+            position: latlng ,
+        }) ;
+
+
+        // 情報ウィンドウのインスタンスを格納する配列
+        <!--var infoWindows = [] ;-->
+
+        <!--// 1つ目の情報ウィンドウのインスタンスを作成する-->
+        <!--// [ new google.maps.InfoWindow() ]の引数にオプションオブジェクトを指定する-->
+
+        <!--infoWindows[0] = new google.maps.InfoWindow( {-->
+            <!--content: "メッセージ" ,-->
+            <!--position: latlng ,-->
+        <!--} ) ;-->
+        <!--// 情報ウィンドウ(のインスタンス)を地図に設置(レンダリング)する-->
+        <!--infoWindows[0].open( map ) ;-->
+
+
+
+
+
+
+
+
+function codeAddress(origin) {
+
+  // google.maps.Geocoder()コンストラクタのインスタンスを生成
+  var geocoder = new google.maps.Geocoder();
+
+  // 地図表示に関するオプション
+  var mapOptions = {
+    zoom: 18,
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    <!--// マウスホイールによるズーム操作を無効-->
+    <!--scrollwheel: false-->
+  };
+
+  // 地図を表示させるインスタンスを生成
+  var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+
+  // geocoder.geocode()メソッドを実行
+  geocoder.geocode( { 'address': origin}, function(results, status) {
+
+    // ジオコーディングが成功した場合
+    if (status == google.maps.GeocoderStatus.OK) {
+    <!--console.log(status);-->
+      // google.maps.Map()コンストラクタに定義されているsetCenter()メソッドで
+      // 変換した緯度・経度情報を地図の中心に表示
+      map.setCenter(results[0].geometry.location);
+
+      // 地図上に目印となるマーカーを設定います。
+      // google.maps.Marker()コンストラクタにマーカーを設置するMapオブジェクトと
+      // 変換した緯度・経度情報を渡してインスタンスを生成
+      // →マーカー詳細
+      var marker = new google.maps.Marker({
+        map: map,
+        position: results[0].geometry.location
+      });
+      <!--console.log(results[0].geometry.location);-->
+
+    // ジオコーディングが成功しなかった場合
+    } else {
+      console.log('Geocode was not successful for the following reason: ' + status);
+    }
+
+  });
+
+}
+
+
+// ボタンに指定したid要素を取得
+var button = document.getElementById("button");
+
+// ボタンが押された時の処理
+button.onclick = function() {
+
+  // フォームに入力された住所情報を取得
+  var address = document.getElementById("origin").value;
+  var destination = document.getElementById("destination").value;
+  console.log(address);
+  // 取得した住所を引数に指定してcodeAddress()関数を実行
+  codeAddress(address);
+
+
+
+
+
+//経路検索(テスト)
+        rendererOptions = {
+        draggable: true,
+        preserveViewport:false
+        };
+        var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+        var directionsService = new google.maps.DirectionsService();
+        var map;
+
+
+         var zoom = 7;
+         var mapTypeId = google.maps.MapTypeId.ROADMAP
+
+         var opts = {
+            zoom: zoom,
+            mapTypeId: mapTypeId
+         };
+         map = new google.maps.Map(document.getElementById("map-canvas"),opts);
+         directionsDisplay.setMap(map);
+
+         google.maps.event.addListener(directionsDisplay, 'directions_changed', function(){
+         });
+         calcRoute();
+
+
+          //二点間の経路(パラメータを決め打ち)
+        function calcRoute() {
+         var request = {
+         origin: address,
+         destination: destination,
+         travelMode: google.maps.DirectionsTravelMode.WALKING,
+         unitSystem: google.maps.DirectionsUnitSystem.METRIC,
+         optimizeWaypoints: true,
+         avoidHighways: false,
+         avoidTolls: false
+         };
+         directionsService.route(request,
+          function(response,status){
+          if (status == google.maps.DirectionsStatus.OK){
+          directionsDisplay.setDirections(response);}
+          });
+        }
+
+}
+
+    </script>
+
+  </body>
+</html>
+{% endblock content %}
+
+
+
+<!--ぐるナビのときのコード-->
+<!--import sys-->
+<!--import requests-->
+<!--import json-->
+<!--import os-->
+<!--# APIアクセスキー-->
+<!--# エンドポイントURL-->
+<!--url = "http://api.gnavi.co.jp/RestSearchAPI/20150630/"-->
+
+
+<!--keyid = os.environ.get("apikey")-->
+<!--##フリーワード用-->
+<!--freeword = input().split(",")-->
+<!--#1ページの表示数-->
+<!--hit_per_page = 20-->
+
+<!--print("検索キーワード = ",freeword)-->
+<!--query = [-->
+    <!--("format", "json"),-->
+    <!--("keyid", keyid),-->
+    <!--("freeword", freeword),-->
+    <!--("hit_per_page", hit_per_page)-->
+<!--]-->
+
+<!--get_data = requests.get(url,params = query)-->
+<!--data = get_data.json()-->
+<!--data_list = list(data['rest'])-->
+
+<!--name = []-->
+<!--for i in data_list:-->
+    <!--name.append(i['name'])-->
+    <!--print(i['name'])-->
+<!--tol = data['total_hit_count']-->
+
+
+<!--print("検索結果　{0}件".format(data['total_hit_count']))-->
+<!--print("表示結果　{0}件".format(data['hit_per_page']))-->
+<!--#print(name)-->
+
+<!--#result = json.dumps(name, ensure_ascii=False)-->
+<!--#print(result)-->
+
