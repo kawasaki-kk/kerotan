@@ -19,8 +19,9 @@
             </tr>
         </table>
             <input type="button" value="地図検索" id="button">
-            <div id="origin_ido" hidden></div>
-            <div id="origin_keido" hidden></div>
+        <input type="text" value="" id="test">
+            <div id="origin_ido"></div>
+            <div id="origin_keido"></div>
             <div id="destination_ido"></div>
             <div id="destination_keido"></div>
     </form>
@@ -201,8 +202,8 @@ button.onclick = function() {
               <!--console.log(results[0].geometry.location.lat());-->
       });
 
-
-
+              <!--document.getElementById('test').value = document.getElementById('origin_ido').innerText;-->
+              <!--alert(document.getElementById('origin_ido').innerText);-->
     //経度と緯度を求める関数
     function geocodeAddress(callback)
     {
@@ -221,13 +222,15 @@ button.onclick = function() {
     {
         // ジオコーディング結果を用いた処理
         console.log(geoCodeResults.lat);
-        return geoCodeResults.lat;
+              document.getElementById('origin_ido').innerText = geoCodeResults.lat;
+              document.getElementById('origin_keido').innerText = geoCodeResults.lng;
     }
 
     geocodeAddress(testResults);
 
-
-
+              document.getElementById('test').value = document.getElementById('origin_ido').innerText;
+              <!--alert(document.getElementById('origin_ido').innerText);-->
+console.log(document.getElementById('origin_ido').innerText);
 
 
     <!--console.log(document.getElementById('keido').value);-->
