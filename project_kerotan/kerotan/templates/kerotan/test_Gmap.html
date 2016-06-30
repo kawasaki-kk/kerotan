@@ -226,11 +226,35 @@ button.onclick = function() {
               document.getElementById('origin_keido').innerText = geoCodeResults.lng;
     }
 
-    geocodeAddress(testResults);
+
+     <!--geocodeAddress(testResults);-->
+
+
+
+
+
+    <!--//以下promiseを使ってみる-->
+  <!--// 新しいプロミスを作成: 1～3秒後に結果を返すことを約束します-->
+  <!--var p1 = new Promise(-->
+    <!--// リゾルバ関数はプロミスの成功または失敗に応じて呼ばれます-->
+    <!--function(resolve, reject) {-->
+            <!--geocodeAddress(testResults);-->
+    <!--});-->
+
+  <!--// プロミスが成功した時に何をするかを定めます-->
+  <!--p1.then(function(){-->
+  <!--alert('abc');-->
+  <!--});-->
+
+
+
 
               document.getElementById('test').value = document.getElementById('origin_ido').innerText;
               <!--alert(document.getElementById('origin_ido').innerText);-->
-console.log(document.getElementById('origin_ido').innerText);
+    console.log(document.getElementById('origin_ido').innerText);
+
+
+
 
 
     <!--console.log(document.getElementById('keido').value);-->
