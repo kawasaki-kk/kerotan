@@ -36,6 +36,14 @@
             <div id="waypoint_keido"></div>
             <div id="waypoint2_ido"></div>
             <div id="waypoint2_keido"></div>
+        <table id="route_guide" border="1">
+            <tr>
+                <td nowrap>1-1</td>
+                <td nowrap>2-1</td>
+                <td nowrap>3-1</td>
+                <td nowrap>4-1</td>
+            </tr>
+        </table>
     </form>
       <div class="map-embed">
 	    <div id="map-canvas" style="width:800px; height:600px">ここに地図が表示されます</div>
@@ -229,7 +237,6 @@
                       document.getElementById('destination_ido').innerText = results[0].geometry.location.lat();
                       document.getElementById('destination_keido').innerText = results[0].geometry.location.lng();
 
-                      var testdata = results[0].geometry;
                       <!--for(var i=0; i < results.length ; i++){-->
                       for(var i in results){
                         <!--alert(results[i].geometry.location);-->
@@ -257,30 +264,30 @@
 
                       <!--document.getElementById('test').value = document.getElementById('origin_ido').innerText;-->
                       <!--alert(document.getElementById('origin_ido').innerText);-->
-            //経度と緯度を求める関数
-            function geocodeAddress(callback)
-            {
-                var geocoder = new google.maps.Geocoder();
-                var address = document.getElementById('origin').value;
-                geocoder.geocode({'address': address}, function(results, status) {
-                    if (status === google.maps.GeocoderStatus.OK) {
-                        callback({"lat":results[0].geometry.location.lat(), "lng":results[0].geometry.location.lng()});
-                    } else {
-                        alert('Geocode was not successful for the following reason: ' + status);
-                    }
-                });
-            }
+            <!--//経度と緯度を求める関数-->
+            <!--function geocodeAddress(callback)-->
+            <!--{-->
+                <!--var geocoder = new google.maps.Geocoder();-->
+                <!--var address = document.getElementById('origin').value;-->
+                <!--geocoder.geocode({'address': address}, function(results, status) {-->
+                    <!--if (status === google.maps.GeocoderStatus.OK) {-->
+                        <!--callback({"lat":results[0].geometry.location.lat(), "lng":results[0].geometry.location.lng()});-->
+                    <!--} else {-->
+                        <!--alert('Geocode was not successful for the following reason: ' + status);-->
+                    <!--}-->
+                <!--});-->
+            <!--}-->
 
-            function testResults(geoCodeResults)
-            {
-                // ジオコーディング結果を用いた処理
-                <!--console.log(geoCodeResults.lat);-->
-                <!--alert(geoCodeResults.lat);-->
-                      document.getElementById('origin_ido').innerText = geoCodeResults.lat;
-                      document.getElementById('origin_keido').innerText = geoCodeResults.lng;
-            }
+            <!--function testResults(geoCodeResults)-->
+            <!--{-->
+                <!--// ジオコーディング結果を用いた処理-->
+                <!--&lt;!&ndash;console.log(geoCodeResults.lat);&ndash;&gt;-->
+                <!--&lt;!&ndash;alert(geoCodeResults.lat);&ndash;&gt;-->
+                      <!--document.getElementById('origin_ido').innerText = geoCodeResults.lat;-->
+                      <!--document.getElementById('origin_keido').innerText = geoCodeResults.lng;-->
+            <!--}-->
 
-             geocodeAddress(testResults);
+             <!--geocodeAddress(testResults);-->
 
 
 
@@ -366,103 +373,35 @@
                     <!--}-->
                     ];
 
-                    var request = {
-                        origin: address,
-                        destination: destination,
-                        <!--travelMode: google.maps.DirectionsTravelMode.TRANSIT,-->
-                        travelMode: google.maps.DirectionsTravelMode.WALKING,
-                        unitSystem: google.maps.DirectionsUnitSystem.METRIC,
-                        optimizeWaypoints: true,
-                        avoidHighways: false,
-                        avoidTolls: false,
-                        <!--waypoints :wayPoints-->
-                        <!--waypoints :wayPoints-->
-                     };
-                     directionsService.route(request,function(response,status){
-                         if (status == google.maps.DirectionsStatus.OK){
-                             <!--var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);-->
-                             directionsDisplay.setDirections(response);
-                             directionsDisplay.setRouteIndex(0);
-                             directionsDisplay.setMap(map);
-                             <!--console.log(response.geocoded_waypoints[0].types[1]);-->
-                             console.log(response.routes[0].legs[0].steps[0].instructions);
-                             <!--document.getElementById("directions-panel2").innerText = response.routes[0].legs[0].steps[0].instructions;-->
-                             <!--document.getElementById("directions-panel2").innerText = document.getElementByClassName(adp-directions);-->
-                         }
-                     });
 
-
-                     var request = {
-                        origin: waypoint,
-                        destination: waypoint2,
-                        <!--travelMode: google.maps.DirectionsTravelMode.TRANSIT,-->
-                        travelMode: google.maps.DirectionsTravelMode.WALKING,
-                        unitSystem: google.maps.DirectionsUnitSystem.METRIC,
-                        optimizeWaypoints: true,
-                        avoidHighways: false,
-                        avoidTolls: false,
-                        <!--waypoints :wayPoints-->
-                     };
-                     directionsService.route(request,function(response,status){
-                         if (status == google.maps.DirectionsStatus.OK){
-                             var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-                             directionsDisplay.setDirections(response);
-                             directionsDisplay.setRouteIndex(0);
-                             directionsDisplay.setMap(map);
-                         }
-                     });
-                     directionsDisplay.setPanel(document.getElementById("directions-panel"));
-                     directionsDisplay.setPanel(document.getElementById("directions-panel2"));
-
-
-                     var request = {
-                        origin: address,
-                        destination: waypoint2,
-                        <!--travelMode: google.maps.DirectionsTravelMode.TRANSIT,-->
-                        travelMode: google.maps.DirectionsTravelMode.WALKING,
-                        unitSystem: google.maps.DirectionsUnitSystem.METRIC,
-                        optimizeWaypoints: true,
-                        avoidHighways: false,
-                        avoidTolls: false,
-                        <!--waypoints :wayPoints-->
-                     };
-                     directionsService.route(request,function(response,status){
-                         if (status == google.maps.DirectionsStatus.OK){
-                             var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-                             directionsDisplay.setDirections(response);
-                             directionsDisplay.setRouteIndex(0);
-                             directionsDisplay.setMap(map);
-                         }
-                     });
-                     directionsDisplay.setPanel(document.getElementById("directions-panel"));
-                     directionsDisplay.setPanel(document.getElementById("directions-panel2"));
-
-
-                     //上記を関数にした(動作は同じのはず)
+                     //それぞれのルートを表示
+                     root(address,destination);
+                     root(waypoint,waypoint2);
                      root(address,waypoint2);
+                     directionsDisplay.setPanel(document.getElementById("directions-panel"));
+                     directionsDisplay.setPanel(document.getElementById("directions-panel2"));
 
-
-            function root(origin,destination){
-                     var request = {
-                        origin: origin,
-                        destination: destination,
-                        <!--travelMode: google.maps.DirectionsTravelMode.TRANSIT,-->
-                        travelMode: google.maps.DirectionsTravelMode.WALKING,
-                        unitSystem: google.maps.DirectionsUnitSystem.METRIC,
-                        optimizeWaypoints: true,
-                        avoidHighways: false,
-                        avoidTolls: false,
-                        <!--waypoints :wayPoints-->
-                     };
-                     directionsService.route(request,function(response,status){
-                         if (status == google.maps.DirectionsStatus.OK){
-                             var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-                             directionsDisplay.setDirections(response);
-                             directionsDisplay.setRouteIndex(0);
-                             directionsDisplay.setMap(map);
-                         }
-                     });
-            }
+                    function root(origin,destination){
+                             var request = {
+                                origin: origin,
+                                destination: destination,
+                                <!--travelMode: google.maps.DirectionsTravelMode.TRANSIT,-->
+                                travelMode: google.maps.DirectionsTravelMode.WALKING,
+                                unitSystem: google.maps.DirectionsUnitSystem.METRIC,
+                                optimizeWaypoints: true,
+                                avoidHighways: false,
+                                avoidTolls: false,
+                                <!--waypoints :wayPoints-->
+                             };
+                             directionsService.route(request,function(response,status){
+                                 if (status == google.maps.DirectionsStatus.OK){
+                                     var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+                                     directionsDisplay.setDirections(response);
+                                     directionsDisplay.setRouteIndex(0);
+                                     directionsDisplay.setMap(map);
+                                 }
+                             });
+                    }
 
 
 
@@ -485,6 +424,27 @@
                         <!--infoWindows[0].open( map ) ;-->
                 <!--}-->
 
+        }
+
+
+        //ルート案内のデータ表示の準備
+        //テスト配列
+        var num = [[1, 3, 5, 7], [2, 4, 6, 8]];
+
+        for(var i= 0; i < num.length; i++){
+            var table = document.getElementById("route_guide");
+            var row = table.insertRow(-1);
+            // セルの挿入
+            var cell1 = row.insertCell(-1);
+            var cell2 = row.insertCell(-1);
+            var cell3 = row.insertCell(-1);
+            var cell4 = row.insertCell(-1);
+
+            //各データの表示
+            cell1.innerHTML = num[i][0];
+            cell2.innerHTML = num[i][1];
+            cell3.innerHTML = num[i][2];
+            cell4.innerHTML = num[i][3];
         }
     </script>
 
