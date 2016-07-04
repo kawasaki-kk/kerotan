@@ -1,0 +1,37 @@
+ekitan_APIの出力.txt
+
+condition
+	pointoFrom
+		latitude
+		longitude
+	pointTo
+		latitude
+		longitude
+	time(出発時間)	
+		min
+		hour
+route
+	totlaTime
+		min
+		hour
+	fare
+	lineList
+		[
+		{stationFrom
+			latitude
+			longitude
+			stationName
+			time(出発時間)
+				min
+				hour
+		stationTo
+			latitude
+			longitude
+			stationName
+			time（到着時間）
+				min
+				hour
+		lineName}
+		,.....
+		]
+
