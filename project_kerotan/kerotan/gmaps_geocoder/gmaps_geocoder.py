@@ -11,7 +11,7 @@ def __result_filtering(geocode_result):
 	if geocode_result[0]["formatted_address"] == 'Japan':
 		return "get_geocode ERROR."
 	else:
-		#緯度と経度の情報だけ返す。
+		#整形された住所と、latとlngが含まれたlocationを返す
 		#結果は複数返ってきてるが、一番目の結果だけreturn.	
 		return {"formatted_address":geocode_result[0]["formatted_address"], "location":geocode_result[0]["geometry"]["location"]}
 	# latitude 	= geocode_result["geometry"]["location"]["lat"]
