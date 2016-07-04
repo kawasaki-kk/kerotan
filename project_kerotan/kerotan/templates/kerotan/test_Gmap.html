@@ -28,25 +28,25 @@
             <input type="text" value="" id="test" hidden>
             <input type="button" value="地図検索" id="button">
 
-            <div id="origin_ido"></div>
-            <div id="origin_keido"></div>
-            <div id="destination_ido"></div>
-            <div id="destination_keido"></div>
-            <div id="waypoint_ido"></div>
-            <div id="waypoint_keido"></div>
-            <div id="waypoint2_ido"></div>
-            <div id="waypoint2_keido"></div>
+            <div id="origin_ido" hidden></div>
+            <div id="origin_keido" hidden></div>
+            <div id="destination_ido" hidden></div>
+            <div id="destination_keido" hidden></div>
+            <div id="waypoint_ido" hidden></div>
+            <div id="waypoint_keido" hidden></div>
+            <div id="waypoint2_ido" hidden></div>
+            <div id="waypoint2_keido" hidden></div>
         <table id="route_guide" border="1">
             <tr>
-                <td nowrap>1-1</td>
-                <td nowrap>2-1</td>
-                <td nowrap>3-1</td>
-                <td nowrap>4-1</td>
+                <td nowrap id="time"></td>
+                <td nowrap id="place"></td>
+                <td nowrap id="means"></td>
+                <td nowrap id="money"></td>
             </tr>
         </table>
     </form>
       <div class="map-embed">
-	    <div id="map-canvas" style="width:800px; height:600px">ここに地図が表示されます</div>
+	    <div id="map-canvas" style="width:800px; height:600px"></div>
       </div>
       <div id="directions-panel" style="width:100%"></div>
       <div id="directions-panel2" style="width:100%"></div>
@@ -62,14 +62,14 @@
                 overflow: auto ;
 
                 position: relative ;
-                top: -100px ;
+                top: -150px ;
                 left: 350px ;
             }
 
             .map-embed > div
             {
                 position: absolute ;
-                top: 0px ;
+                top: -150px ;
                 left: 0px ;
 
                 width: 100% ;
@@ -90,6 +90,57 @@
                 height:400px;
                 overflow:auto;
             }
+            body{
+                background-color : lightgray;
+            }
+            #origin{
+                width:150%;
+                <!--height:30%;-->
+            }
+            #destination{
+                width:150%;
+                color:green;
+                <!--box-shadow: inset 1px 4px 9px -6px rgba(0,0,0,0.5);-->
+            }
+            #waypoint{
+                width:150%;
+                color:green;
+            }
+            #waypoint2{
+                width:150%;
+                color:green;
+            }
+            #button{
+                width:200px;
+                font-size:24px;
+                font-weight:bold;
+                text-decoration:none;
+                display:block;
+                text-align:center;
+                padding:8px 0 10px;
+                margin:0px 0px 0px 0px;
+                color:#fff;
+                background-color:#49a9d4;
+                border-radius:5px;
+            }
+            #origin_ido{
+                width:100px;
+                margin:0px 0px 0px 0px;
+                padding:0px;
+            }
+            <!--<div id="origin_ido"></div>-->
+            <!--<div id="origin_keido"></div>-->
+            <!--<div id="destination_ido"></div>-->
+            <!--<div id="destination_keido"></div>-->
+            <!--<div id="waypoint_ido"></div>-->
+            <!--<div id="waypoint_keido"></div>-->
+            <!--<div id="waypoint2_ido"></div>-->
+            <!--<div id="waypoint2_keido"></div>            -->
+
+            <!--td{-->
+                <!--color:green;-->
+            <!--}-->
+
     </style>
       <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
   </head>
@@ -424,28 +475,35 @@
                         <!--infoWindows[0].open( map ) ;-->
                 <!--}-->
 
+                //ルート案内のデータ表示の準備
+                //テスト配列
+                var num = [[1, 3, 5, 7], [2, 4, 6, 8]];
+
+                for(var i= 0; i < num.length; i++){
+                    document.getElementById("time").innerHTML = "時間";
+                    document.getElementById("place").innerHTML = "場所";
+                    document.getElementById("means").innerHTML = "方法";
+                    document.getElementById("money").innerHTML = "料金";
+
+                    var table = document.getElementById("route_guide");
+                    var row = table.insertRow(-1);
+                    // セルの挿入
+                    var cell1 = row.insertCell(-1);
+                    var cell2 = row.insertCell(-1);
+                    var cell3 = row.insertCell(-1);
+                    var cell4 = row.insertCell(-1);
+
+                    //各データの表示
+                    cell1.innerHTML = num[i][0];
+                    cell2.innerHTML = num[i][1];
+                    cell3.innerHTML = num[i][2];
+                    cell4.innerHTML = num[i][3];
+                }
+
         }
 
 
-        //ルート案内のデータ表示の準備
-        //テスト配列
-        var num = [[1, 3, 5, 7], [2, 4, 6, 8]];
 
-        for(var i= 0; i < num.length; i++){
-            var table = document.getElementById("route_guide");
-            var row = table.insertRow(-1);
-            // セルの挿入
-            var cell1 = row.insertCell(-1);
-            var cell2 = row.insertCell(-1);
-            var cell3 = row.insertCell(-1);
-            var cell4 = row.insertCell(-1);
-
-            //各データの表示
-            cell1.innerHTML = num[i][0];
-            cell2.innerHTML = num[i][1];
-            cell3.innerHTML = num[i][2];
-            cell4.innerHTML = num[i][3];
-        }
     </script>
 
   </body>
