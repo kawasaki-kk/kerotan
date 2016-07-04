@@ -1,7 +1,7 @@
-ekitan_APIの出力.txt
+﻿ekitan_APIの出力.txt
 
 condition
-	pointoFrom
+	pointFrom
 		latitude
 		longitude
 	pointTo
