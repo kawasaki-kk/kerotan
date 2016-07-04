@@ -1,0 +1,130 @@
+{
+  "condition": {
+    "pointTo": {
+      "longitude": "139.766246",
+      "latitude": "35.681298"
+    },
+    "time": {
+      "min": "45",
+      "hour": "14"
+    },
+    "pointFrom": {
+      "longitude": "139.690522",
+      "latitude": "35.696031"
+    }
+  },
+  "route": {
+    "lineList": [
+      {
+        "stationFrom": {
+          "longitude": "139.690522",
+          "time": {
+            "min": "45",
+            "hour": "14"
+          },
+          "latitude": "35.696031",
+          "stationName": "\u4eee\u60f3\u70b91"
+        },
+        "stationTo": {
+          "longitude": "139.684869",
+          "time": {
+            "min": "54",
+            "hour": "14"
+          },
+          "latitude": "35.693925",
+          "stationName": "\u4e2d\u91ce\u5742\u4e0a"
+        },
+        "lineName": "\u79fb\u52d5"
+      },
+      {
+        "stationFrom": {
+          "longitude": "139.684869",
+          "time": {
+            "min": "54",
+            "hour": "14"
+          },
+          "latitude": "35.693925",
+          "stationName": "\u4e2d\u91ce\u5742\u4e0a"
+        },
+        "stationTo": {
+          "longitude": "139.707508",
+          "time": {
+            "min": "59",
+            "hour": "14"
+          },
+          "latitude": "35.687892",
+          "stationName": "\u65b0\u5bbf\u4e09\u4e01\u76ee"
+        },
+        "lineName": "\u6771\u4eac\u30e1\u30c8\u30ed\u4e38\u30ce\u5185\u7dda"
+      },
+      {
+        "stationFrom": {
+          "longitude": "139.707508",
+          "time": {
+            "min": "8",
+            "hour": "15"
+          },
+          "latitude": "35.687892",
+          "stationName": "\u65b0\u5bbf\u4e09\u4e01\u76ee"
+        },
+        "stationTo": {
+          "longitude": "139.761425",
+          "time": {
+            "min": "15",
+            "hour": "15"
+          },
+          "latitude": "35.692297",
+          "stationName": "\u795e\u4fdd\u753a"
+        },
+        "lineName": "\u90fd\u55b6\u65b0\u5bbf\u7dda"
+      },
+      {
+        "stationFrom": {
+          "longitude": "139.761425",
+          "time": {
+            "min": "18",
+            "hour": "15"
+          },
+          "latitude": "35.692297",
+          "stationName": "\u795e\u4fdd\u753a"
+        },
+        "stationTo": {
+          "longitude": "139.767681",
+          "time": {
+            "min": "21",
+            "hour": "15"
+          },
+          "latitude": "35.681797",
+          "stationName": "\u5927\u624b\u753a(\u6771\u4eac)"
+        },
+        "lineName": "\u90fd\u55b6\u4e09\u7530\u7dda"
+      },
+      {
+        "stationFrom": {
+          "longitude": "139.767681",
+          "time": {
+            "min": "21",
+            "hour": "15"
+          },
+          "latitude": "35.681797",
+          "stationName": "\u5927\u624b\u753a(\u6771\u4eac)"
+        },
+        "stationTo": {
+          "longitude": "139.766246",
+          "time": {
+            "min": "23",
+            "hour": "15"
+          },
+          "latitude": "35.681298",
+          "stationName": "\u4eee\u60f3\u70b92"
+        },
+        "lineName": "\u79fb\u52d5"
+      }
+    ],
+    "fare": "280",
+    "totalTime": {
+      "min": "38",
+      "hour": "0"
+    }
+  }
+}
