@@ -1,3 +1,6 @@
+*.pyc
+./API/__pycache__
+./kerotan/__pycache__
 APIkey.txt
 .idea/
 ~$schedule.xlsx

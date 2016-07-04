@@ -2,33 +2,36 @@ ekitan_APIの出力.txt
 
 condition
 	pointoFrom
-		緯度、経度
+		latitude
+		longitude
 	pointTo
-		緯度、経度
-	time
-		時、分
-到着地点
-	緯度経度
-出発時間
+		latitude
+		longitude
+	time(出発時間)	
+		min
+		hour
+route
+	totlaTime
+		min
+		hour
+	fare
+	lineList
+		[
+		{stationFrom
+			latitude
+			longitude
+			stationName
+			time(出発時間)
+				min
+				hour
+		stationTo
+			latitude
+			longitude
+			stationName
+			time（到着時間）
+				min
+				hour
+		lineName}
+		,.....
+		]
 
-一番上の経路
-
-	徒歩
-		移動時間
-	出発地点からの最寄駅
-		駅名
-		緯度経度
-		出発時間
-		移動時間
-	着地点からの最寄駅
-		駅名
-		緯度経度
-		到着時間
-		移動時間
-	徒歩
-		移動時間
-	経由駅
-		駅名
-		緯度経度
-	料金
-		トータルだけでいいや
