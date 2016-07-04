@@ -4,7 +4,7 @@ import urllib
 import requests
 import json
 import sys,os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../API/')
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../../API/')
 from APIkey_load_yaml import load_API_KEY
 
 class Bing(object):
@@ -116,7 +116,7 @@ if __name__ == '__main__':
     #APIキーをロード
     # f = load_API_KEY()
     # key = f["name"=="Bing search API"]["key"]
-    key = load_API_KEY()["name"=="Bing search API"]["key"]
+    key = load_API_KEY("Bing search API")
     q = "TIS"
     bing = Bing(key)
 
@@ -124,7 +124,13 @@ if __name__ == '__main__':
     # keys=["Title", "Url", "Source", "Date"]
     results = bing.web_search(q, 100, keys)
     print( json.dumps(results, indent=2) )
-
+    # try:
+    with open("./bing_api_results/bing_api_result.txt","w") as f:
+        f.write(json.dumps(results, indent=2))
+        print("finished.")
+    # except:
+        # print("Bing api write ERROR.")
+        # sys.exit()
     # print("------------------------------------------------")
     # keys=["Title", "BingUrl", "ID"]
     # results = bing.related_search(q, keys)
