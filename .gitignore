@@ -1,13 +1,4 @@
 *.pyc
-<<<<<<< HEAD
-./API/__pycache__
-./kerotan/__pycache__
-APIkey.txt
-.idea/
-./project_kerotan/project_kerotan/__pycache__
-./project_kerotan/kerotan/__pycache__
-./API/*.pyc
-=======
 __pycache__/
 API/__pycache__/*
 /API/__pycache__
@@ -30,5 +21,4 @@ project_kerotan/project_kerotan/__pycache__/
 project_kerotan/project_kerotan/__pycache__/*.pyc
 
 
->>>>>>> refs/remotes/origin/Gmap
 ~$schedule.xlsx
