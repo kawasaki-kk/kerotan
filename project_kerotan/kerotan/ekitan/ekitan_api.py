@@ -4,6 +4,8 @@ import urllib
 import requests
 import json
 import sys,os
+import traceback
+
 from datetime import datetime
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../../../API')
 from APIkey_load_yaml import load_API_KEY
@@ -16,10 +18,7 @@ class Ekitan(object):
         self.api_key = key
 
     # web検索
-    def norikae_search(self, s_ido=35.696031, s_keido=139.690522, t_ido=35.681298, t_keido=139.766246, keys=["Url"]):
-        """
-            keysには'ID','Title','Description','DisplayUrl','Url'が入りうる
-        """
+    def norikae_search(self, s_ido=35.696031, s_keido=139.690522, t_ido=35.681298, t_keido=139.766246 ):
         # 基本になるURL
         url = 'http://go.ekitan.com/asp-servlet/TrialAPI?'
 
@@ -76,26 +75,7 @@ class Ekitan(object):
 
         # print("request_url",request_url)
 
-        # 結果を格納する配列
-        # results = []
-
-        # 最大数でAPIを叩く繰り返す回数
-        # repeat = k / max_num
-        # repeat=int(repeat)
-        # # 残り
-        # remainder = k % max_num
-
-        # 最大数でAPIを叩くのを繰り返す    
-        # for i in range(repeat):
-        #     result = self._search(request_url, keys)
-        #     results.extend(result)
-
-        # 残り
-        # if remainder:
-        #     result = self._search(request_url, remainder, skip, keys)
-        #     results.extend(result)
-
-        results = self._search(request_url, keys)
+        results = self._search(request_url)
         # print(results)
         # 結果を返す
         return results
@@ -103,7 +83,7 @@ class Ekitan(object):
 
 
     # APIを叩く
-    def _search(self, request_url, keys):
+    def _search(self, request_url):
         # APIを叩くための最終的なURL
         # final_url = "{0}&$top={1}&$skip={2}".format(request_url, top, skip)
         # レスポンス（json化）
@@ -113,16 +93,6 @@ class Ekitan(object):
         response = requests.get(request_url)
         response = response.json()
         response_filtered = self.__response_filter(response)
-
-        # 結果を格納する配列
-        # results = []
-        # 返ってきたもののうち指定された情報を取得する
-        # for item in response["d"]["results"]:
-        #     result = {}
-        #     for key in keys:
-        #         # result[key] = item[key].encode("utf-8")
-        #         result[key] = item[key]
-        #     results.append(result)
 
         # 結果を返す
         return (response, response_filtered)
@@ -187,88 +157,52 @@ class Ekitan(object):
         #------------------------------------------------------------------------------------------------------------------------------------------
         results={"condition":condition, "route":route}
 
-        return results
+        try:
+            return results
+        except:
+            raise
 
-        # line1={}
-
-        # stationFrom_stationName =response["trainDoc"]["routeList"]["route"][0]["lineList"]["line"][0]["stationFrom"]["stationName"]["~T"]
-        # stationFrom_latitude    =response["trainDoc"]["routeList"]["route"][0]["lineList"]["line"][0]["stationFrom"]["coordinate"]["latitude"]["~T"]
-        # stationFrom_longitude   =response["trainDoc"]["routeList"]["route"][0]["lineList"]["line"][0]["stationFrom"]["coordinate"]["longitude"]["~T"]
-        # stationFrom_time_hour   =response["trainDoc"]["routeList"]["route"][0]["lineList"]["line"][0]["stationFrom"]["time"]["hour"]
-        # stationFrom_time_min    =response["trainDoc"]["routeList"]["route"][0]["lineList"]["line"][0]["stationFrom"]["time"]["min"]
-        # stationFrom_time={"time":{"hour":stationFrom_time_hour, "min":stationFrom_time_min}
-        # stationFrom = {"stationFrom":{"stationName":stationFrom_stationName, "latitude":stationFrom_latitude, "longitude":stationFrom_longitude, "time":stationFrom_time}
-
-        # stationTo_stationName   =response["trainDoc"]["routeList"]["route"][0]["lineList"]["line"][0]["stationTo"]["stationName"]["~T"]
-        # stationTo_latitude      =response["trainDoc"]["routeList"]["route"][0]["lineList"]["line"][0]["stationTo"]["coordinate"]["latitude"]["~T"]
-        # stationTo_longitude     =response["trainDoc"]["routeList"]["route"][0]["lineList"]["line"][0]["stationTo"]["coordinate"]["longitude"]["~T"]
-        # stationTo_time_hour     =response["trainDoc"]["routeList"]["route"][0]["lineList"]["line"][0]["stationTo"]["time"]["hour"]
-        # stationTo_time_min      =response["trainDoc"]["routeList"]["route"][0]["lineList"]["line"][0]["stationTo"]["time"]["min"]
-        # stationTo_time={"time":{"hour":stationTo_time_hour, "min":stationTo_time_min}
-        # stationTo = {"stationTo":{"stationName":stationTo_stationName, "latitude":stationTo_latitude, "longitude":stationTo_longitude, "time":stationTo_time } }
-        # # stationTo_toStationHomeTime =response["trainDoc"]["routeList"]["route"][0]["stationTo"]["toStationHomeTime"]["~T"]
-        # # stationTo = {"stationTo":{"stationName":stationTo_stationName, "latitude":stationTo_latitude, "longitude":stationTo_longitude, "time":stationTo_time, "toStationHomeTime":stationTo_toStationHomeTime } }
-
-        # lineName_tmp = response["trainDoc"]["routeList"]["route"][0]["lineList"]["line"][0]["lineName"]["~T"]
-        # lineName = {"lineName" : lineName_tmp}
-
-        # line1.update(stationFrom)
-        # line1.update(stationTo)
-        # line1.update(lineName)
-        # #------------------------------------------------------------------------------------------------------------------------------------------
-        # #------------------------------------------------------------------------------------------------------------------------------------------
-
-        # fare          =response["trainDoc"]["routeList"]["fare"]["~T"]
-        # totalTime_hour     =response["trainDoc"]["routeList"]["time"]["hour"]["~T"]
-        # totalTime_min     =response["trainDoc"]["routeList"]["time"]["min"]["~T"]
-        # totalTime     =aaaaa
-
-
-
-#ゴミ
-# def bytes2str_inResults(results, keys):
-#     for i in range(len(results)):
-#         for j in keys:
-#             # print(isinstance(results[ i ][ j ], bytes))
-#             if isinstance(results[ i ][ j ], bytes)=='True':
-#                 results[ i ][ j ]=results[ i ][ j ].decode('utf-8')
-#             if isinstance(results[ i ][ j ], bytes)=='True':
-#                 results[ i ][ j ]=results[ i ][ j ].decode('utf-8')
-#     return results
 
 if __name__ == '__main__':
     #APIキーをロード
-    # f = load_API_KEY()
-    # key = f["name"=="Bing search API"]["key"]
     key = load_API_KEY("Ekitan API")
-    # q = "TIS"
+    #インスタンス作成
     ekitan = Ekitan(key)
 
-    # keys=["Title", "Url", "Source", "Description", "Date"]
-    # keys=["Title", "Url", "Source", "Date"]
-    results, results_filtered = ekitan.norikae_search()
-    # print(results)
-    # print( json.dumps(results, indent=2) )
-    
+    #検索
+    try:
+        results, results_filtered = ekitan.norikae_search()
+        # print(results)
+        # print( json.dumps(results, indent=2) )
+    except:
+        print("--------------------------------------------")
+        print("Error occured in ekitan search API.")
+        print(traceback.print_exc())
+        # print(traceback.print_tb(sys.exc_info()[2]))
+        print("--------------------------------------------")    
+        raise
+
+    #結果をファイル出力（上書きするので注意）
     try:
         with open("./ekitan_results/result_keiro.txt","w") as f:
             f.write(json.dumps(results, indent=2))
-            print("finished.")
     except:
-        print("APIkey_write_yaml ERROR.")
-        sys.exit()
+        print("--------------------------------------------")
+        print("Error: Failed to output file of results of ekitan search .")
+        print(traceback.print_exc())
+        print("--------------------------------------------")    
+        # sys.exit()
 
     try:
         with open("./ekitan_results/result_keiro_filtered.txt","w") as f:
             f.write(json.dumps(results_filtered, indent=2))
-            print("finished.")
     except:
-        print("APIkey_write_yaml ERROR.")
-        sys.exit()
+        print("--------------------------------------------")    
+        print("Error: Failed to output file of results of ekitan search .")
+        print(traceback.print_exc())
+        print("--------------------------------------------")    
+        # sys.exit()
 
 
-    # print("------------------------------------------------")
-    # keys=["Title", "BingUrl", "ID"]
-    # results = bing.related_search(q, keys)
-    # print(json.dumps(results, indent=2) )
+    print("finished.")
 
