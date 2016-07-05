@@ -1,4 +1,5 @@
 import os, sys
+import traceback
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -65,69 +66,173 @@ JCBを中心としたクレジットカード会社の基幹システムなど�
 
 
 		if form.is_valid():
-			#Get address from 会社名 by Dictionary.
-			try:
-			# if 1:
-				print("I'm in try")
-				print("start_address",company_address[form.cleaned_data["start_address"]])
-				print("arriv_address",company_address[form.cleaned_data["arriv_address"]])
-				
-				#Get geocode by Google Maps API.
-				#会社名を辞書を使って住所に変換、住所からgeocodeを取得
-				geocode = {}
-				geocode.update({ "start" : get_geocode( company_address[form.cleaned_data["start_address"]] )["location"] })
-				geocode.update({ "arriv" : get_geocode( company_address[form.cleaned_data["arriv_address"]] )["location"] })
-				print("geocode finished.")
+			#入力内容が、辞書に登録された会社名に含まれるなら
+			if form.cleaned_data["start_address"] in company_address.keys():
+				try:
+					#geocode,会社概要、ニュースを取得する。
+					try:
+						#Get address from 会社名 by Dictionary.
+						start_company=company_address[form.cleaned_data["start_address"]]
+						arriv_company=company_address[form.cleaned_data["arriv_address"]]
+					except KeyError:
+						#入力内容が、辞書に登録されていなかった。
+						raise
+					except:
+						raise
 
-				#到着住所が会社名ならば、概要を取得
-				overview = company_overview[ form.cleaned_data["arriv_address"] ]
-				print("overview", overview)
+					#Get geocode by Google Maps API.
+					try:
+						geocode = {}
+						geocode.update({ "start" : get_geocode( start_company )["location"] })
+						geocode.update({ "arriv" : get_geocode( arriv_company )["location"] })
+						print("geocode finished.")
+					except Exception as e:
+						#入力された住所から、geocodeを特定できない。
+						#再入力させるために、入力画面に戻す。
+						print("--------------------------------------------")
+						print( type(e) )
+						print( e )
+						print(traceback.print_exc())
+						print("--------------------------------------------")
+						raise
+					except:
+						#謎のエラー発生時
+						print("--------------------------------------------")
+						print("謎Error in GoogleMaps.")
+						print(traceback.print_exc())
+						print("--------------------------------------------")
+						raise
 
-				#到着住所が会社名ならば、ニュースを取得
-				bing = Bing( load_API_KEY("Bing search API") )
-				keys = ["Title", "Url", "Source", "Description", "Date"]
-				query = form.cleaned_data["arriv_address"]
-				news = bing.web_search(query, 5, keys)
-				print("news", json.dumps(news, indent=2) )
+					#会社概要を取得
+					try:
+						#辞書からとってくるだけ。
+						overview = company_overview[ form.cleaned_data["arriv_address"] ]
+						print("overview", overview)
+					except:
+						#謎のエラー発生時.
+						print("--------------------------------------------")
+						print("謎Error in 会社概要.")
+						print(traceback.print_exc())
+						print("--------------------------------------------")
+						raise
+
+					#ニュースを取得
+					try:
+						#bing search APIで、関連ニュースをとってくる
+						bing = Bing( load_API_KEY("Bing search API") )
+						keys = ["Title", "Url", "Source", "Description", "Date"]
+						query = form.cleaned_data["arriv_address"]
+						news = bing.web_search(query, 5, keys)
+						print("news", json.dumps(news, indent=2) )
+					except (ConnectionError, TypeError, ConnectionAbortedError, MaxRetryError, AttributeError):
+						#一分間に連続してリクエスト送ると、回数制限に引っかかってエラー。たぶん。その場合、空のニュースを返すことにする。
+						#raiseはしない。
+						print("--------------------------------------------")
+						print("BingSearchAPI回数制限に引っかかりました。時間を置きましょう。")
+						print(traceback.print_exc())
+						print("--------------------------------------------")
+						news=[]
+					except FileNotFoundError:
+						#検索結果のファイル出力時のエラー。
+						#raiseはしない。
+						print("--------------------------------------------")
+						print("BingSearchAPIの結果出力時のエラー。")
+						print(traceback.print_exc())
+						print("--------------------------------------------")
+						news=[]
+					except:
+						# 謎のエラー発生時。
+						print("--------------------------------------------")
+						print("謎Error in ニュース.")
+						print(traceback.print_exc())
+						print("--------------------------------------------")
+						raise
+
+				#raiseしたら、Top画面に戻す。
+				except:
+					return render_to_response('kerotan/test_Gmap.html', {'form':form}, RequestContext(request))
+
+
+			#入力内容が、辞書に登録されていなかった。
+			#この場合、入力内容は登録されていない会社名or住所
+			#	前者の場合は、適切なgeocodeが取得できない可能性があるが、現状考慮せずそのままgeocodeを取得。
+			#	後者の場合は、住所から適切なgeocodeを取得。
+			elif form.cleaned_data["start_address"] in company_address.keys():
+				print("--------------------------------------------------------")
+				print("入力された出発・到着住所は、辞書に登録されてませんでした。経路情報だけ返します。")
+				print(traceback.print_exc())
+				print("--------------------------------------------------------")
+				try:
+					try:
+						start_company=form.cleaned_data["start_address"]
+						arriv_company=form.cleaned_data["arriv_address"]
+						geocode = {}
+						geocode.update({ "start" : get_geocode( start_company )["location"] })
+						geocode.update({ "arriv" : get_geocode( arriv_company )["location"] })
+						print("geocode",geocode)
+						#会社概要、ニュースは取得しない（できない）ので、空データだけ作っとく。
+						overview=""
+						news=[]
+					except Exception as e:
+						#入力された住所から、geocodeを特定できない。
+						#再入力させるために、入力画面に戻す。
+						print("--------------------------------------------")
+						print(traceback.print_exc())
+						print("--------------------------------------------")
+						raise
+					except:
+						#原因不明の謎のエラー
+						print("--------------------------------------------")
+						print("謎のエラー。")
+						print(traceback.print_exc())
+						print("--------------------------------------------")
+						raise
+				except:
+						return render_to_response('kerotan/test_Gmap.html', {'form':form}, RequestContext(request))
 			
-			except:
-				print("I'm in except")
-				# Get geocode by Google Maps API.
-				# そのまま住所からgeocodeを取得
-				geocode = {}
-				geocode.update({ "start" : get_geocode( form.cleaned_data["start_address"] )["location"] })
-				geocode.update({ "arriv" : get_geocode( form.cleaned_data["arriv_address"] )["location"] })
-				print("geocode",geocode)
+			else:
+				#ありえない。
+				return render_to_response('kerotan/test_Gmap.html', {'form':form}, RequestContext(request))
 
-			#この辺の処理は適当。後でコード整理する。
-			#エラーメッセージ送るだけで、エラー処理はやってない。。。
-			if "get_geocode ERROR." in geocode.values():
-				print("get_geocode ERROR.")
-				ErrorMassege="住所を正しい住所を入力してください。"
-				return render_to_response('kerotan/test_Gmap.html', {'form':form, 'ErrorMassage':ErrorMassege }, RequestContext(request))			
-			
+
+
 			#Get route infomation by Ekitan API.
-			#エラー処理はやってない
-			ekitan = Ekitan( load_API_KEY("Ekitan API") )
-			_, results_filtered = ekitan.norikae_search( s_ido=geocode["start"]["lat"], s_keido=geocode["start"]["lng"], t_ido=geocode["arriv"]["lat"], t_keido=geocode["arriv"]["lng"],  )
-			# print("results_filtered",results_filtered)
+			try:
+				ekitan = Ekitan( load_API_KEY("Ekitan API") )
+				_, results_filtered = ekitan.norikae_search( s_ido=geocode["start"]["lat"], s_keido=geocode["start"]["lng"], t_ido=geocode["arriv"]["lat"], t_keido=geocode["arriv"]["lng"],  )
+				print("results_filtered",results_filtered)
+				return render_to_response('kerotan/test_Gmap.html', {
+							'form':form, 'route':results_filtered, \
+							'start_latitude':geocode["start"]["lat"], 'start_longitude':geocode["start"]["lng"],\
+							'arriv_latitude':geocode["arriv"]["lat"], 'arriv_longitude':geocode["arriv"]["lng"],\
+							'news':news, 'overview':overview\
+							}, RequestContext(request))
+	
+			except FileNotFoundError:
+				#APIキーが記述されたファイルの読み込みエラー
+				print("--------------------------------------------")
+				print("APIキーが記述されたファイルの読み込みエラー")
+				print(traceback.print_exc())
+				print("--------------------------------------------")
+				raise
+			except:
+				print("--------------------------------------------")
+				print(traceback.print_exc())
+				print("--------------------------------------------")
+				return render_to_response('kerotan/test_Gmap.html', {'form':form}, RequestContext(request))
+				
 
-			return render_to_response('kerotan/test_Gmap.html', {
-						'form':form, 'route':results_filtered, \
-						'start_latitude':geocode["start"]["lat"], 'start_longitude':geocode["start"]["lng"],
-						'arriv_latitude':geocode["arriv"]["lat"], 'arriv_longitude':geocode["arriv"]["lng"],
-						'news':news, 'overview':overview
-						}, RequestContext(request))
-			# return render_to_response('kerotan/test_Gmap.html', {'formset':formset, 'latitude':location["location"]["lat"], 'longitude':location["location"]["lng"]}, RequestContext(request))
+
+
+
+		#form.is_valid()を満たさない場合
 		else:
 			return render_to_response('kerotan/test_Gmap.html', {'form':form}, RequestContext(request))
 			# return render_to_response('kerotan/test_Gmap.html', {'formset':formset}, RequestContext(request))
 
-	#作成したgoogle map?を表示
+	#request.methodがPOSTじゃない場合
 	else:
 		form = AddressForm()
-		# formset = AddressFormSet()
 		return render_to_response('kerotan/test_Gmap.html', {'form':form}, RequestContext(request))
-		# return render_to_response('kerotan/test_Gmap.html', {'formset':formset}, RequestContext(request))
 		# return renderrender(RequestContext(request), 'kerotan/test_Gmap.html')
 
