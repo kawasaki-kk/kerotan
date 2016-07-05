@@ -6,6 +6,7 @@
 {% block content %}
 <!DOCTYPE html>
 <html>
+ <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
   <head>
     <form action="{% url 'kerotan:display_google_map' %}" method="post">
     {% csrf_token %}
@@ -96,23 +97,98 @@
       <div>料金{{route.route.fare}}</div>
         <table border="1">
             <tr>
-                <td>出発場所</td>
-                <td>出発時間</td>
-                <td>到着時間</td>
-                <td>到着場所</td>
-                <td>路線名</td>
+                <td width="70">出発場所</td>
+                <td width="70">出発時間</td>
+                <td width="70">到着時間</td>
+                <td width="70">到着場所</td>
+                <td width="70">手段</td>
                 <!--<div id="waypoint2_ido" hidden></div>-->
                 <!--<div id="waypoint2_keido" hidden></div>-->
             </tr>
         </table>
                 {% for i in route.route.lineList %}
-              <table border="1">
+              <table border="1" >
             <tr>
-                <td>{{i.stationFrom.stationName}}</td>
-                <td>{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>
-                <td>{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>
-                <td>{{i.stationTo.stationName}}</td>
-                <td>{{i.lineName}}</td>
+                <td width="70">{{i.stationFrom.stationName}}</td>
+                <td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>
+                <td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>
+                <td width="70">{{i.stationTo.stationName}}</td>
+                <td width="70" id="{{i.stationFrom.stationName}}">{{i.lineName}}</td>
+                <!--<td id="{{i.stationFrom.latitude}}">{{i.stationFrom.latitude}}</td>-->
+                <script>
+                    <!--var canvas = document.getElementById( 'map-canvas' ) ;-->
+
+                    <!--// 中心の位置座標を指定する-->
+                    <!--&lt;!&ndash;新宿グランドタワー&ndash;&gt;-->
+                    <!--var latlng = new google.maps.LatLng(35.695803589598675 , 139.6903158724308 );-->
+
+                    <!--//国内に限定するためにboundを使いたいので範囲を設定-->
+                    <!--var bound_latlng = new google.maps.LatLng(25 , 125 );-->
+                    <!--var bound_latlng2 = new google.maps.LatLng(47 , 150 );-->
+
+                    <!--// 地図のオプションを設定する-->
+                    <!--var mapOptions = {-->
+                        <!--zoom: 16 ,				// ズーム値-->
+                        <!--center: latlng ,		// 中心座標 [latlng]-->
+                        <!--mapTypeId: google.maps.MapTypeId.ROADMAP-->
+                    <!--};-->
+
+                    <!--// [canvas]に、[mapOptions]の内容の、地図のインスタンス([map])を作成する-->
+                    <!--var map = new google.maps.Map( canvas , mapOptions ) ;-->
+
+                    <!--rendererOptions = {-->
+                    <!--draggable: true,-->
+                    <!--preserveViewport:false-->
+                    <!--};-->
+                    <!--var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);-->
+                    <!--var directionsService = new google.maps.DirectionsService();-->
+                    <!--var map;-->
+
+
+                     <!--var zoom = 7;-->
+                     <!--var mapTypeId = google.maps.MapTypeId.ROADMAP-->
+
+                     <!--var opts = {-->
+                        <!--zoom: zoom,-->
+                        <!--mapTypeId: mapTypeId-->
+                     <!--};-->
+                     <!--map = new google.maps.Map(document.getElementById("map-canvas"),opts);-->
+                     <!--directionsDisplay.setMap(map);-->
+
+                     <!--google.maps.event.addListener(directionsDisplay, 'directions_changed', function(){-->
+                     <!--});-->
+
+                    <!--var origin = new google.maps.LatLng({{i.stationFrom.latitude}},{{i.stationFrom.longitude}});-->
+
+                    <!--var destination = new google.maps.LatLng({{i.stationTo.latitude}},{{i.stationTo.longitude}});-->
+
+
+                    <!--&lt;!&ndash;root(origin,destination);&ndash;&gt;-->
+                    <!--&lt;!&ndash;alert(document.getElementById('{{i.stationFrom.latitude}}').innerText);&ndash;&gt;-->
+                     <!--//それぞれのルートを表示-->
+
+                    <!--function root(origin,destination){-->
+                             <!--var request = {-->
+                                <!--origin: origin,-->
+                                <!--destination: destination,-->
+                                <!--&lt;!&ndash;travelMode: google.maps.DirectionsTravelMode.TRANSIT,&ndash;&gt;-->
+                                <!--travelMode: google.maps.DirectionsTravelMode.WALKING,-->
+                                <!--unitSystem: google.maps.DirectionsUnitSystem.METRIC,-->
+                                <!--optimizeWaypoints: true,-->
+                                <!--avoidHighways: false,-->
+                                <!--avoidTolls: false,-->
+                                <!--&lt;!&ndash;waypoints :wayPoints&ndash;&gt;-->
+                             <!--};-->
+                             <!--directionsService.route(request,function(response,status){-->
+                                 <!--if (status == google.maps.DirectionsStatus.OK){-->
+                                     <!--var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);-->
+                                     <!--directionsDisplay.setDirections(response);-->
+                                     <!--directionsDisplay.setRouteIndex(0);-->
+                                     <!--directionsDisplay.setMap(map);-->
+                                 <!--}-->
+                             <!--});-->
+                    <!--}-->
+                </script>
             </tr>
         </table>
                 {% endfor %}
@@ -207,11 +283,21 @@
             <!--}-->
 
     </style>
-      <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+      <!--<script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>-->
   </head>
   <body onload="timing_load()">
   <!--<body onload="initialize()">-->
 <!--<div id="map_canvas" style="width:500px; height:300px"></div>-->
+                  {% for i in route.route.lineList %}
+              <table border="1" >
+            <tr>
+                <td width="70" id="{{i.stationFrom.stationName}}">{{i.lineName}}</td>
+                <td id="{{i.stationFrom.latitude}}">{{i.stationFrom.latitude}}</td>
+                <script>
+                </script>
+            </tr>
+        </table>
+
     <script type="text/javascript">
         // キャンパスの要素を取得する
         var canvas = document.getElementById( 'map-canvas' ) ;
@@ -490,13 +576,21 @@
                     <!--}-->
                     ];
 
+                    var origin = new google.maps.LatLng({{i.stationFrom.latitude}},{{i.stationFrom.longitude}});
+
+                    var destination = new google.maps.LatLng({{i.stationTo.latitude}},{{i.stationTo.longitude}});
 
                      //それぞれのルートを表示
-                     root(address,destination);
-                     root(waypoint,waypoint2);
-                     root(address,waypoint2);
+                     root(origin,destination);
+                     <!--root(address,destination);-->
+                     <!--root(waypoint,waypoint2);-->
+                     <!--root(address,waypoint2);-->
+
                      directionsDisplay.setPanel(document.getElementById("directions-panel"));
                      directionsDisplay.setPanel(document.getElementById("directions-panel2"));
+                    <!--alert(document.getElementById('{{i.stationFrom.latitude}}').innerText);-->
+
+
 
                     function root(origin,destination){
                              var request = {
@@ -573,7 +667,7 @@
 
 
     </script>
-
+                {% endfor %}
   </body>
 </html>
 {% endblock content %}
