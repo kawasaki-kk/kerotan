@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 
-{% block title %}ここにページのタイトル書くよ！{% endblock title %}
+{% block title %}ケロたん{% endblock title %}
 
 {% block content %}
 <!DOCTYPE html>
@@ -24,50 +24,51 @@
                 <td><label for="id_q">到着住所</label></td>
                 <td>{{ form.arriv_address }}</td>
             </tr>
-            <tr>
-                <td><label for="id_q">start_latitude</label></td>
-                <td>{{start_latitude}}</td>
-            </tr>
-            <tr>
-                <td><label for="id_q">start_longitude</label></td>
-                <td>{{start_longitude}}</td>
-            </tr>
-            <tr>
-                <td><label for="id_q">arriv_latitude</label></td>
-                <td>{{arriv_latitude}}</td>
-            </tr>
-            <tr>
-                <td><label for="id_q">arriv_longitude</label></td>
-                <td>{{arriv_longitude}}</td>
-            </tr>
-            <tr>
-                <td><label for="id_q">route</label></td>
-                <td>{{route}}</td>
-            </tr>
-            <tr>
-                <td><label for="id_q">route</label></td>
-                <td>{{route.route.lineList}}</td>
-            </tr>
+            <!--<tr>-->
+                <!--<td><label for="id_q">start_latitude</label></td>-->
+                <!--<td>{{start_latitude}}</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+                <!--<td><label for="id_q">start_longitude</label></td>-->
+                <!--<td>{{start_longitude}}</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+                <!--<td><label for="id_q">arriv_latitude</label></td>-->
+                <!--<td>{{arriv_latitude}}</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+                <!--<td><label for="id_q">arriv_longitude</label></td>-->
+                <!--<td>{{arriv_longitude}}</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+                <!--<td><label for="id_q">route</label></td>-->
+                <!--<td>{{route}}</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+                <!--<td><label for="id_q">route</label></td>-->
+                <!--<td>{{route.route.lineList}}</td>-->
+            <!--</tr>-->
 
-            <tr>
+            <tr hidden>
                 <td>出発地</td>
                 <td><input type="text" value="東京都新宿区西新宿8-17-1" id="origin"></td>
             </tr>
-            <tr>
+            <tr hidden>
                 <td>目的地</td>
-                <td><input type="text" value="新宿駅" id="destination"></td>
+                <td><input type="text" value="新宿駅" id="destination" hidden></td>
             </tr>
-                <td>経由地1</td>
-                <td><input type="text" value="東京駅" id="waypoint"></td>
+            <tr hidden>
+                <td hidden>経由地1</td>
+                <td><input type="text" value="東京駅" id="waypoint" hidden></td>
             </tr>
-            <tr>
+            <tr hidden>
                 <td>経由地2</td>
-                <td><input type="text" value="品川駅" id="waypoint2"></td>
+                <td><input type="text" value="品川駅" id="waypoint2" hidden></td>
             </tr>
         </table>
             <input type="text" value="" id="test" hidden>
-            <input type="submit" value="地図検索" id="button">
-
+            <input type="submit" value="地図検索" id="button" class ="btn btn-success btn-lg">
+            <!--<button type="button class" class ="btn btn-default">Defaule </button>-->
             <div id="origin_ido" hidden></div>
             <div id="origin_keido" hidden></div>
             <div id="destination_ido" hidden></div>
@@ -90,109 +91,79 @@
       <div class="map-embed">
 	    <div id="map-canvas" style="width:800px; height:600px"></div>
       </div>
-      <div id="directions-panel" style="width:100%"></div>
-      <div id="directions-panel2" style="width:100%"></div>
+      <!--<div id="directions-panel" style="width:100%"></div>-->
+      <!--<div id="directions-panel2" style="width:100%"></div>-->
       <div id="route"></div>
-      <div>トータル時間{{route.route.totalTime.hour}}時間{{route.route.totalTime.min}}分</div>
-      <div>料金{{route.route.fare}}</div>
-        <table border="1">
-            <tr>
-                <td width="70">出発場所</td>
-                <td width="70">出発時間</td>
-                <td width="70">到着時間</td>
-                <td width="70">到着場所</td>
-                <td width="70">手段</td>
-                <!--<div id="waypoint2_ido" hidden></div>-->
-                <!--<div id="waypoint2_keido" hidden></div>-->
-            </tr>
-        </table>
-                {% for i in route.route.lineList %}
-              <table border="1" >
-            <tr>
-                <td width="70">{{i.stationFrom.stationName}}</td>
-                <td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>
-                <td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>
-                <td width="70">{{i.stationTo.stationName}}</td>
-                <td width="70" id="{{i.stationFrom.stationName}}">{{i.lineName}}</td>
-                <!--<td id="{{i.stationFrom.latitude}}">{{i.stationFrom.latitude}}</td>-->
-                <script>
-                    <!--var canvas = document.getElementById( 'map-canvas' ) ;-->
-
-                    <!--// 中心の位置座標を指定する-->
-                    <!--&lt;!&ndash;新宿グランドタワー&ndash;&gt;-->
-                    <!--var latlng = new google.maps.LatLng(35.695803589598675 , 139.6903158724308 );-->
-
-                    <!--//国内に限定するためにboundを使いたいので範囲を設定-->
-                    <!--var bound_latlng = new google.maps.LatLng(25 , 125 );-->
-                    <!--var bound_latlng2 = new google.maps.LatLng(47 , 150 );-->
-
-                    <!--// 地図のオプションを設定する-->
-                    <!--var mapOptions = {-->
-                        <!--zoom: 16 ,				// ズーム値-->
-                        <!--center: latlng ,		// 中心座標 [latlng]-->
-                        <!--mapTypeId: google.maps.MapTypeId.ROADMAP-->
-                    <!--};-->
-
-                    <!--// [canvas]に、[mapOptions]の内容の、地図のインスタンス([map])を作成する-->
-                    <!--var map = new google.maps.Map( canvas , mapOptions ) ;-->
-
-                    <!--rendererOptions = {-->
-                    <!--draggable: true,-->
-                    <!--preserveViewport:false-->
-                    <!--};-->
-                    <!--var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);-->
-                    <!--var directionsService = new google.maps.DirectionsService();-->
-                    <!--var map;-->
 
 
-                     <!--var zoom = 7;-->
-                     <!--var mapTypeId = google.maps.MapTypeId.ROADMAP-->
 
-                     <!--var opts = {-->
-                        <!--zoom: zoom,-->
-                        <!--mapTypeId: mapTypeId-->
-                     <!--};-->
-                     <!--map = new google.maps.Map(document.getElementById("map-canvas"),opts);-->
-                     <!--directionsDisplay.setMap(map);-->
+        <ul  class="nav nav-tabs">
+          <!--<li class="active col-md-5"><a href="#tab1" data-toggle="tab" style="position:absolute; top:-100px">経路</a></li>-->
+          <!--<li class="col-md-10"><a href="#tab2" data-toggle="tab" style="position:absolute; top:-100px">会社概要</a></li>-->
+          <!--<li class="col-md-15"><a href="#tab3" data-toggle="tab" style="position:absolute; top:-100px">ニュース</a></li>-->
+          <li class="active col-md-5"><a href="#tab1" data-toggle="tab">経路</a></li>
+          <li class="col-md-10"><a href="#tab2" data-toggle="tab">会社概要</a></li>
+          <li class="col-md-15"><a href="#tab3" data-toggle="tab">ニュース</a></li>
+        </ul>
 
-                     <!--google.maps.event.addListener(directionsDisplay, 'directions_changed', function(){-->
-                     <!--});-->
+        <div class="tab-content">
+          <div class="tab-pane active" id="tab1">
+              <div>トータル時間{{route.route.totalTime.hour}}時間{{route.route.totalTime.min}}分</div>
+              <div>料金{{route.route.fare}}</div>
+              <div class="container">
+                  <table class="table table-bordered table-striped table-condensed">
+                      <thead>
+                        <tr>
+                            <td width="70">出発場所</td>
+                            <td width="70">出発時間</td>
+                            <td width="70">到着時間</td>
+                            <td width="70">到着場所</td>
+                            <td width="70">手段</td>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for i in route.route.lineList %}
+                       <tr>
+                           <td width="70">{{i.stationFrom.stationName}}</td>
+                           <td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>
+                           <td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>
+                           <td width="70">{{i.stationTo.stationName}}</td>
+                           <td width="70">{{i.lineName}}</td>
+                           <!--<td id="{{i.stationFrom.latitude}}">{{i.stationFrom.latitude}}</td>-->
+                       </tr>
+                        {% endfor %}
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+          <div class="tab-pane" id="tab2"></div>
+          <div class="tab-pane" id="tab3"></div>
+        </div>
 
-                    <!--var origin = new google.maps.LatLng({{i.stationFrom.latitude}},{{i.stationFrom.longitude}});-->
-
-                    <!--var destination = new google.maps.LatLng({{i.stationTo.latitude}},{{i.stationTo.longitude}});-->
-
-
-                    <!--&lt;!&ndash;root(origin,destination);&ndash;&gt;-->
-                    <!--&lt;!&ndash;alert(document.getElementById('{{i.stationFrom.latitude}}').innerText);&ndash;&gt;-->
-                     <!--//それぞれのルートを表示-->
-
-                    <!--function root(origin,destination){-->
-                             <!--var request = {-->
-                                <!--origin: origin,-->
-                                <!--destination: destination,-->
-                                <!--&lt;!&ndash;travelMode: google.maps.DirectionsTravelMode.TRANSIT,&ndash;&gt;-->
-                                <!--travelMode: google.maps.DirectionsTravelMode.WALKING,-->
-                                <!--unitSystem: google.maps.DirectionsUnitSystem.METRIC,-->
-                                <!--optimizeWaypoints: true,-->
-                                <!--avoidHighways: false,-->
-                                <!--avoidTolls: false,-->
-                                <!--&lt;!&ndash;waypoints :wayPoints&ndash;&gt;-->
-                             <!--};-->
-                             <!--directionsService.route(request,function(response,status){-->
-                                 <!--if (status == google.maps.DirectionsStatus.OK){-->
-                                     <!--var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);-->
-                                     <!--directionsDisplay.setDirections(response);-->
-                                     <!--directionsDisplay.setRouteIndex(0);-->
-                                     <!--directionsDisplay.setMap(map);-->
-                                 <!--}-->
-                             <!--});-->
-                    <!--}-->
-                </script>
-            </tr>
-        </table>
-                {% endfor %}
-          <style type="text/css">
+        <!--<table border="1" style="position:absolute; top:210px;">-->
+            <!--<tr>-->
+                <!--<td width="70">出発場所</td>-->
+                <!--<td width="70">出発時間</td>-->
+                <!--<td width="70">到着時間</td>-->
+                <!--<td width="70">到着場所</td>-->
+                <!--<td width="70">手段</td>-->
+                <!--&lt;!&ndash;<div id="waypoint2_ido" hidden></div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div id="waypoint2_keido" hidden></div>&ndash;&gt;-->
+            <!--</tr>-->
+        <!--</table>-->
+              <!--<table border="1" style="position:absolute; top:230px;">-->
+                <!--{% for i in route.route.lineList %}-->
+            <!--<tr>-->
+                <!--<td width="70">{{i.stationFrom.stationName}}</td>-->
+                <!--<td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>-->
+                <!--<td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>-->
+                <!--<td width="70">{{i.stationTo.stationName}}</td>-->
+                <!--<td width="70">{{i.lineName}}</td>-->
+                <!--&lt;!&ndash;<td id="{{i.stationFrom.latitude}}">{{i.stationFrom.latitude}}</td>&ndash;&gt;-->
+            <!--</tr>-->
+                <!--{% endfor %}-->
+            <!--</table>-->
+            <style type="text/css">
             .map-embed
             {
                 max-width: 100% ;
@@ -203,8 +174,8 @@
                 overflow: auto ;
 
                 position: relative ;
-                top: -150px ;
-                left: 350px ;
+                top: -100px ;
+                left: 400px ;
             }
 
             .map-embed > div
@@ -232,7 +203,7 @@
                 overflow:auto;
             }
             body{
-                background-color : lightgray;
+                background-color : 	paleturquoise;
             }
             #origin{
                 width:150%;
@@ -285,30 +256,14 @@
     </style>
       <!--<script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>-->
   </head>
-  <body onload="timing_load()">
-  <!--<body onload="initialize()">-->
-<!--<div id="map_canvas" style="width:500px; height:300px"></div>-->
-                  {% for i in route.route.lineList %}
-              <table border="1" >
-            <tr>
-                <td width="70" id="{{i.stationFrom.stationName}}">{{i.lineName}}</td>
-                <td id="{{i.stationFrom.latitude}}">{{i.stationFrom.latitude}}</td>
-                <script>
-                </script>
-            </tr>
-        </table>
-
-    <script type="text/javascript">
-        // キャンパスの要素を取得する
+ <script>
+     //地図の初期設定
+     function timing_load(){
         var canvas = document.getElementById( 'map-canvas' ) ;
 
         // 中心の位置座標を指定する
         <!--新宿グランドタワー-->
         var latlng = new google.maps.LatLng(35.695803589598675 , 139.6903158724308 );
-
-        //国内に限定するためにboundを使いたいので範囲を設定
-        var bound_latlng = new google.maps.LatLng(25 , 125 );
-        var bound_latlng2 = new google.maps.LatLng(47 , 150 );
 
         // 地図のオプションを設定する
         var mapOptions = {
@@ -328,6 +283,23 @@
             map: map ,
             position: latlng ,
         }) ;
+
+     }
+ </script>
+  <body onload="timing_load()">
+  <!--<body onload="initialize()">-->
+<!--<div id="map_canvas" style="width:500px; height:300px"></div>-->
+                  <!--{% for i in route.route.lineList %}-->
+              <table border="1" style="position:relative; top:-600px;" hidden>
+            <tr>
+                <td width="70" id="{{i.stationFrom.stationName}}">{{i.lineName}}</td>
+                <td id="{{i.stationFrom.latitude}}">{{i.stationFrom.latitude}}</td>
+                <script>
+                </script>
+            </tr>
+        </table>
+    <script type="text/javascript">
+    <!--alert("{{news}}");-->
 
 
         // 情報ウィンドウのインスタンスを格納する配列
@@ -576,12 +548,24 @@
                     <!--}-->
                     ];
 
-                    var origin = new google.maps.LatLng({{i.stationFrom.latitude}},{{i.stationFrom.longitude}});
+                    <!--var origin = new google.maps.LatLng({{i.stationFrom.latitude}},{{i.stationFrom.longitude}});-->
 
-                    var destination = new google.maps.LatLng({{i.stationTo.latitude}},{{i.stationTo.longitude}});
+                    <!--var destination = new google.maps.LatLng({{i.stationTo.latitude}},{{i.stationTo.longitude}});-->
+
+
 
                      //それぞれのルートを表示
-                     root(origin,destination);
+                     {% for i in route.route.lineList %}
+                        <!--alert("a");-->
+                        var origin = new google.maps.LatLng({{i.stationFrom.latitude}},{{i.stationFrom.longitude}});
+                        var destination = new google.maps.LatLng({{i.stationTo.latitude}},{{i.stationTo.longitude}});
+                        if("{{i.lineName}}" == "移動"){
+                            root(origin,destination);
+                        } else{
+                            root_line(origin,destination);
+                        }
+                     {% endfor %}
+
                      <!--root(address,destination);-->
                      <!--root(waypoint,waypoint2);-->
                      <!--root(address,waypoint2);-->
@@ -591,7 +575,23 @@
                     <!--alert(document.getElementById('{{i.stationFrom.latitude}}').innerText);-->
 
 
+                    //電車による移動時のルート表示(ただし、直線)
+                    function root_line(origin,destination){
+                              latlngs = [
+                                origin,
+                                destination
+                              ];
+                              var Path = new google.maps.Polyline({
+                              path: latlngs,
+                              strokeOpacity: 1.0,
+                            });
 
+                            Path.setMap(map);
+                    }
+
+
+
+                    //徒歩のときのルート表示
                     function root(origin,destination){
                              var request = {
                                 origin: origin,
@@ -667,7 +667,26 @@
 
 
     </script>
+                <!--{% endfor %}-->
+         <dir>
+            {{overview}}
+        </dir>
+              <table border="1" width="1000">
+                {% for j in news %}
+            <tr width="1000">
+                <td width="70">{{j.Source}}</td>
+                <td width="70">{{j.Date}}</td>
+                <td width="200">{{j.Title}}</td>
+                <td width="70">{{j.Url}}</td>
+                <td width="500">{{j.Description}}</td>
+                <!--<td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>-->
+                <!--<td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>-->
+                <!--<td width="70">{{i.stationTo.stationName}}</td>-->
+                <!--<td width="70">{{i.lineName}}</td>-->
+                <!--<td id="{{i.stationFrom.latitude}}">{{i.stationFrom.latitude}}</td>-->
+            </tr>
                 {% endfor %}
+            </table>
   </body>
 </html>
 {% endblock content %}
