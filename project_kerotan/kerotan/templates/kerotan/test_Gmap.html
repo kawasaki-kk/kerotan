@@ -1,0 +1,694 @@
+{% extends "base.html" %}
+
+
+{% block title %}ケロたん{% endblock title %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+ <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+  <head>
+    <form action="{% url 'kerotan:display_google_map' %}" method="post">
+    {% csrf_token %}
+    <!-- {{ formset.management_form }} -->
+        <table>
+            <!-- {{ formset }} -->
+            <!-- {% for form in formset %} -->
+            <!-- {{ form }} -->
+            <!-- {% endfor %} -->
+            <tr>
+                <td><label for="id_q">出発住所</label></td>
+                <td>{{ form.start_address }}</td>
+            </tr>
+            <tr>
+                <td><label for="id_q">到着住所</label></td>
+                <td>{{ form.arriv_address }}</td>
+            </tr>
+            <!--<tr>-->
+                <!--<td><label for="id_q">start_latitude</label></td>-->
+                <!--<td>{{start_latitude}}</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+                <!--<td><label for="id_q">start_longitude</label></td>-->
+                <!--<td>{{start_longitude}}</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+                <!--<td><label for="id_q">arriv_latitude</label></td>-->
+                <!--<td>{{arriv_latitude}}</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+                <!--<td><label for="id_q">arriv_longitude</label></td>-->
+                <!--<td>{{arriv_longitude}}</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+                <!--<td><label for="id_q">route</label></td>-->
+                <!--<td>{{route}}</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+                <!--<td><label for="id_q">route</label></td>-->
+                <!--<td>{{route.route.lineList}}</td>-->
+            <!--</tr>-->
+
+            <tr hidden>
+                <td>出発地</td>
+                <td><input type="text" value="東京都新宿区西新宿8-17-1" id="origin"></td>
+            </tr>
+            <tr hidden>
+                <td>目的地</td>
+                <td><input type="text" value="新宿駅" id="destination" hidden></td>
+            </tr>
+            <tr hidden>
+                <td hidden>経由地1</td>
+                <td><input type="text" value="東京駅" id="waypoint" hidden></td>
+            </tr>
+            <tr hidden>
+                <td>経由地2</td>
+                <td><input type="text" value="品川駅" id="waypoint2" hidden></td>
+            </tr>
+        </table>
+            <input type="text" value="" id="test" hidden>
+            <input type="submit" value="地図検索" id="button" class ="btn btn-success btn-lg">
+            <!--<button type="button class" class ="btn btn-default">Defaule </button>-->
+            <div id="origin_ido" hidden></div>
+            <div id="origin_keido" hidden></div>
+            <div id="destination_ido" hidden></div>
+            <div id="destination_keido" hidden></div>
+            <div id="waypoint_ido" hidden></div>
+            <div id="waypoint_keido" hidden></div>
+            <div id="waypoint2_ido" hidden></div>
+            <div id="waypoint2_keido" hidden></div>
+
+        <table id="route_guide" border="1">
+            <tr>
+                <td nowrap id="time"></td>
+                <td nowrap id="place"></td>
+                <td nowrap id="means"></td>
+                <td nowrap id="money"></td>
+            </tr>
+        </table>
+
+    </form>
+      <div class="map-embed">
+	    <div id="map-canvas" style="width:800px; height:600px"></div>
+      </div>
+      <!--<div id="directions-panel" style="width:100%"></div>-->
+      <!--<div id="directions-panel2" style="width:100%"></div>-->
+      <div id="route"></div>
+
+
+
+        <ul  class="nav nav-tabs">
+          <!--<li class="active col-md-5"><a href="#tab1" data-toggle="tab" style="position:absolute; top:-100px">経路</a></li>-->
+          <!--<li class="col-md-10"><a href="#tab2" data-toggle="tab" style="position:absolute; top:-100px">会社概要</a></li>-->
+          <!--<li class="col-md-15"><a href="#tab3" data-toggle="tab" style="position:absolute; top:-100px">ニュース</a></li>-->
+          <li class="active col-md-5"><a href="#tab1" data-toggle="tab">経路</a></li>
+          <li class="col-md-10"><a href="#tab2" data-toggle="tab">会社概要</a></li>
+          <li class="col-md-15"><a href="#tab3" data-toggle="tab">ニュース</a></li>
+        </ul>
+
+        <div class="tab-content">
+          <div class="tab-pane active" id="tab1">
+              <div>トータル時間{{route.route.totalTime.hour}}時間{{route.route.totalTime.min}}分</div>
+              <div>料金{{route.route.fare}}</div>
+              <div class="container">
+                  <table class="table table-bordered table-striped table-condensed">
+                      <thead>
+                        <tr>
+                            <td width="70">出発場所</td>
+                            <td width="70">出発時間</td>
+                            <td width="70">到着時間</td>
+                            <td width="70">到着場所</td>
+                            <td width="70">手段</td>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for i in route.route.lineList %}
+                       <tr>
+                           <td width="70">{{i.stationFrom.stationName}}</td>
+                           <td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>
+                           <td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>
+                           <td width="70">{{i.stationTo.stationName}}</td>
+                           <td width="70">{{i.lineName}}</td>
+                           <!--<td id="{{i.stationFrom.latitude}}">{{i.stationFrom.latitude}}</td>-->
+                       </tr>
+                        {% endfor %}
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+          <div class="tab-pane" id="tab2"></div>
+          <div class="tab-pane" id="tab3"></div>
+        </div>
+
+        <!--<table border="1" style="position:absolute; top:210px;">-->
+            <!--<tr>-->
+                <!--<td width="70">出発場所</td>-->
+                <!--<td width="70">出発時間</td>-->
+                <!--<td width="70">到着時間</td>-->
+                <!--<td width="70">到着場所</td>-->
+                <!--<td width="70">手段</td>-->
+                <!--&lt;!&ndash;<div id="waypoint2_ido" hidden></div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div id="waypoint2_keido" hidden></div>&ndash;&gt;-->
+            <!--</tr>-->
+        <!--</table>-->
+              <!--<table border="1" style="position:absolute; top:230px;">-->
+                <!--{% for i in route.route.lineList %}-->
+            <!--<tr>-->
+                <!--<td width="70">{{i.stationFrom.stationName}}</td>-->
+                <!--<td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>-->
+                <!--<td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>-->
+                <!--<td width="70">{{i.stationTo.stationName}}</td>-->
+                <!--<td width="70">{{i.lineName}}</td>-->
+                <!--&lt;!&ndash;<td id="{{i.stationFrom.latitude}}">{{i.stationFrom.latitude}}</td>&ndash;&gt;-->
+            <!--</tr>-->
+                <!--{% endfor %}-->
+            <!--</table>-->
+            <style type="text/css">
+            .map-embed
+            {
+                max-width: 100% ;
+                height: 0 ;
+                margin: 0 ;
+                padding: 0 0 56.25% ;
+
+                overflow: auto ;
+
+                position: relative ;
+                top: -100px ;
+                left: 400px ;
+            }
+
+            .map-embed > div
+            {
+                position: absolute ;
+                top: -150px ;
+                left: 0px ;
+
+                width: 100% ;
+                height: 100% ;
+
+                margin: 0 ;
+                padding: 0 ;
+            }
+
+            .map-embed img
+            {
+                max-width: none ;
+            }
+
+            #panel{
+                margin-left:70%;
+                padding:0 10px;
+                height:400px;
+                overflow:auto;
+            }
+            body{
+                background-color : 	paleturquoise;
+            }
+            #origin{
+                width:150%;
+                <!--height:30%;-->
+            }
+            #destination{
+                width:150%;
+                color:green;
+                <!--box-shadow: inset 1px 4px 9px -6px rgba(0,0,0,0.5);-->
+            }
+            #waypoint{
+                width:150%;
+                color:green;
+            }
+            #waypoint2{
+                width:150%;
+                color:green;
+            }
+            #button{
+                width:200px;
+                font-size:24px;
+                font-weight:bold;
+                text-decoration:none;
+                display:block;
+                text-align:center;
+                padding:8px 0 10px;
+                margin:0px 0px 0px 0px;
+                color:#fff;
+                background-color:#49a9d4;
+                border-radius:5px;
+            }
+            #origin_ido{
+                width:100px;
+                margin:0px 0px 0px 0px;
+                padding:0px;
+            }
+            <!--<div id="origin_ido"></div>-->
+            <!--<div id="origin_keido"></div>-->
+            <!--<div id="destination_ido"></div>-->
+            <!--<div id="destination_keido"></div>-->
+            <!--<div id="waypoint_ido"></div>-->
+            <!--<div id="waypoint_keido"></div>-->
+            <!--<div id="waypoint2_ido"></div>-->
+            <!--<div id="waypoint2_keido"></div>            -->
+
+            <!--td{-->
+                <!--color:green;-->
+            <!--}-->
+
+    </style>
+      <!--<script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>-->
+  </head>
+ <script>
+     //地図の初期設定
+     function timing_load(){
+        var canvas = document.getElementById( 'map-canvas' ) ;
+
+        // 中心の位置座標を指定する
+        <!--新宿グランドタワー-->
+        var latlng = new google.maps.LatLng(35.695803589598675 , 139.6903158724308 );
+
+        // 地図のオプションを設定する
+        var mapOptions = {
+            zoom: 16 ,				// ズーム値
+            center: latlng ,		// 中心座標 [latlng]
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
+        // [canvas]に、[mapOptions]の内容の、地図のインスタンス([map])を作成する
+        var map = new google.maps.Map( canvas , mapOptions ) ;
+
+        // マーカーのインスタンスは配列で管理しよう
+        var markers = [] ;
+
+        // マーカーのインスタンスを作成する
+        markers[0] = new google.maps.Marker({
+            map: map ,
+            position: latlng ,
+        }) ;
+
+     }
+ </script>
+  <body onload="timing_load()">
+  <!--<body onload="initialize()">-->
+<!--<div id="map_canvas" style="width:500px; height:300px"></div>-->
+                  <!--{% for i in route.route.lineList %}-->
+              <table border="1" style="position:relative; top:-600px;" hidden>
+            <tr>
+                <td width="70" id="{{i.stationFrom.stationName}}">{{i.lineName}}</td>
+                <td id="{{i.stationFrom.latitude}}">{{i.stationFrom.latitude}}</td>
+                <script>
+                </script>
+            </tr>
+        </table>
+    <script type="text/javascript">
+    <!--alert("{{news}}");-->
+
+
+        // 情報ウィンドウのインスタンスを格納する配列
+        <!--var infoWindows = [] ;-->
+
+        <!--// 1つ目の情報ウィンドウのインスタンスを作成する-->
+        <!--// [ new google.maps.InfoWindow() ]の引数にオプションオブジェクトを指定する-->
+
+        <!--infoWindows[0] = new google.maps.InfoWindow( {-->
+            <!--content: "メッセージ" ,-->
+            <!--position: latlng ,-->
+        <!--} ) ;-->
+        <!--// 情報ウィンドウ(のインスタンス)を地図に設置(レンダリング)する-->
+        <!--infoWindows[0].open( map ) ;-->
+
+
+
+
+
+        <!--function codeAddress(origin) {-->
+
+          <!--// google.maps.Geocoder()コンストラクタのインスタンスを生成-->
+          <!--var geocoder = new google.maps.Geocoder();-->
+
+          <!--// 地図表示に関するオプション-->
+          <!--var mapOptions = {-->
+            <!--zoom: 18,-->
+            <!--mapTypeId: google.maps.MapTypeId.ROADMAP,-->
+            <!--&lt;!&ndash;// マウスホイールによるズーム操作を無効&ndash;&gt;-->
+            <!--&lt;!&ndash;scrollwheel: false&ndash;&gt;-->
+          <!--};-->
+
+          <!--// 地図を表示させるインスタンスを生成-->
+          <!--var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);-->
+
+          <!--// geocoder.geocode()メソッドを実行-->
+          <!--geocoder.geocode( { 'address': origin}, function(results, status) {-->
+            <!--&lt;!&ndash;console.log(status);&ndash;&gt;-->
+            <!--// ジオコーディングが成功した場合-->
+            <!--if (status == google.maps.GeocoderStatus.OK) {-->
+            <!--&lt;!&ndash;console.log(status);&ndash;&gt;-->
+            <!--&lt;!&ndash;alert( results[ 0 ].geometry.location );&ndash;&gt;-->
+              <!--// google.maps.Map()コンストラクタに定義されているsetCenter()メソッドで-->
+              <!--// 変換した緯度・経度情報を地図の中心に表示-->
+              <!--map.setCenter(results[0].geometry.location);-->
+
+              <!--// 地図上に目印となるマーカーを設定います。-->
+              <!--// google.maps.Marker()コンストラクタにマーカーを設置するMapオブジェクトと-->
+              <!--// 変換した緯度・経度情報を渡してインスタンスを生成-->
+              <!--// →マーカー詳細-->
+              <!--var marker = new google.maps.Marker({-->
+                <!--map: map,-->
+                <!--position: results[0].geometry.location-->
+              <!--});-->
+              <!--&lt;!&ndash;console.log(results[0].geometry.location);&ndash;&gt;-->
+
+            <!--// ジオコーディングが成功しなかった場合-->
+            <!--} else {-->
+              <!--console.log('Geocode was not successful for the following reason: ' + status);-->
+            <!--}-->
+
+          <!--});-->
+
+        <!--}-->
+        <!---->
+        <!---->
+
+
+
+        // ボタンに指定したid要素を取得
+        var button = document.getElementById("button");
+
+        // ボタンが押された時の処理
+        <!--button.onclick = function() {-->
+
+        function timing_load(){
+          // フォームに入力された住所情報を取得
+          var address = document.getElementById("origin").value;
+          var destination = document.getElementById("destination").value;
+          var waypoint = document.getElementById("waypoint").value;
+          var waypoint2 = document.getElementById("waypoint2").value;
+          <!--console.log(address);-->
+          <!--console.log(destination);-->
+          // 取得した住所を引数に指定してcodeAddress()関数を実行
+          <!--codeAddress(address);-->
+
+
+
+            var geocoder = new google.maps.Geocoder();
+            <!--var address = document.getElementById("origin").value;-->
+                geocoder.geocode( { 'address': address,
+                                    'region': 'jp'}, function(results, status){
+                      <!--callback(results[0].geometry.location.lat());-->
+                      document.getElementById('origin_ido').innerText = results[0].geometry.location.lat();
+                      document.getElementById('origin_keido').innerText = results[0].geometry.location.lng();
+                      <!--console.log(results[0].geometry.location);-->
+                      <!--alert( results[ 0 ].geometry.location.lat());-->
+                      <!--console.log(results[0].geometry.location.lat());-->
+                      <!--infowindow(results[0].geometry.location);-->
+              });
+
+            var geocoder = new google.maps.Geocoder();
+                geocoder.geocode( { 'address': destination,
+                                    'language': 'jp',
+                                    <!--'bounds': bound_latlng|bound_latlng2,-->
+                                    <!--'bounds': 36,130|40,140,-->
+                                    'region': 'jp'}, function(results, status){
+
+                      <!--var bounds = new google.maps.LatLngBounds();-->
+                      document.getElementById('destination_ido').innerText = results[0].geometry.location.lat();
+                      document.getElementById('destination_keido').innerText = results[0].geometry.location.lng();
+
+                      <!--for(var i=0; i < results.length ; i++){-->
+                      for(var i in results){
+                        <!--alert(results[i].geometry.location);-->
+                        <!--alert(results[i].formatted_address);-->
+                        };
+                      <!--console.log(results[0].geometry.location.lat());-->
+              });
+
+            var geocoder = new google.maps.Geocoder();
+                geocoder.geocode( { 'address': waypoint,
+                                    'region': "jp"}, function(results, status){
+                      document.getElementById('waypoint_ido').innerText = results[0].geometry.location.lat();
+                      document.getElementById('waypoint_keido').innerText = results[0].geometry.location.lng();
+              });
+
+            var geocoder = new google.maps.Geocoder();
+                geocoder.geocode( { 'address': waypoint2,
+                                    'region': "jp"}, function(results, status){
+                      document.getElementById('waypoint2_ido').innerText = results[0].geometry.location.lat();
+                      document.getElementById('waypoint2_keido').innerText = results[0].geometry.location.lng();
+              });
+
+
+
+
+                      <!--document.getElementById('test').value = document.getElementById('origin_ido').innerText;-->
+                      <!--alert(document.getElementById('origin_ido').innerText);-->
+            <!--//経度と緯度を求める関数-->
+            <!--function geocodeAddress(callback)-->
+            <!--{-->
+                <!--var geocoder = new google.maps.Geocoder();-->
+                <!--var address = document.getElementById('origin').value;-->
+                <!--geocoder.geocode({'address': address}, function(results, status) {-->
+                    <!--if (status === google.maps.GeocoderStatus.OK) {-->
+                        <!--callback({"lat":results[0].geometry.location.lat(), "lng":results[0].geometry.location.lng()});-->
+                    <!--} else {-->
+                        <!--alert('Geocode was not successful for the following reason: ' + status);-->
+                    <!--}-->
+                <!--});-->
+            <!--}-->
+
+            <!--function testResults(geoCodeResults)-->
+            <!--{-->
+                <!--// ジオコーディング結果を用いた処理-->
+                <!--&lt;!&ndash;console.log(geoCodeResults.lat);&ndash;&gt;-->
+                <!--&lt;!&ndash;alert(geoCodeResults.lat);&ndash;&gt;-->
+                      <!--document.getElementById('origin_ido').innerText = geoCodeResults.lat;-->
+                      <!--document.getElementById('origin_keido').innerText = geoCodeResults.lng;-->
+            <!--}-->
+
+             <!--geocodeAddress(testResults);-->
+
+
+
+
+
+            <!--//以下promiseを使ってみる-->
+          <!--// 新しいプロミスを作成: 1～3秒後に結果を返すことを約束します-->
+          <!--function A(){-->
+           <!--return  new Promise(-->
+            <!--// リゾルバ関数はプロミスの成功または失敗に応じて呼ばれます-->
+            <!--function(resolve, reject) {-->
+                    <!--geocodeAddress(testResults);-->
+                      <!--&lt;!&ndash;alert('abc');&ndash;&gt;-->
+
+            <!--});-->
+        <!--}-->
+          <!--// プロミスが成功した時に何をするかを定めます-->
+          <!--A().then(function(){-->
+            <!--alert('abc');-->
+          <!--});-->
+
+        <!--A()-->
+            <!--.then(function(resultObject) {-->
+                <!--// 正常時の処理-->
+            <!--})-->
+            <!--.catch(function(reason) {-->
+                <!--// 失敗時の処理-->
+            <!--});-->
+
+
+                      <!--document.getElementById('test').value = document.getElementById('origin_ido').innerText;-->
+                      <!--alert(document.getElementById('origin_ido').innerText);-->
+            <!--console.log(document.getElementById('origin_ido').innerText);-->
+
+
+
+
+
+            <!--console.log(document.getElementById('keido').value);-->
+            <!--var a;-->
+            <!--var geoCodeResults = geo_value(a);-->
+            <!--console.log(a);-->
+
+            <!--console.log(geocoder.geocode.result[0]);-->
+
+
+
+
+                rendererOptions = {
+                draggable: true,
+                preserveViewport:false
+                };
+                var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+                var directionsService = new google.maps.DirectionsService();
+                var map;
+
+
+                 var zoom = 7;
+                 var mapTypeId = google.maps.MapTypeId.ROADMAP
+
+                 var opts = {
+                    zoom: zoom,
+                    mapTypeId: mapTypeId
+                 };
+                 map = new google.maps.Map(document.getElementById("map-canvas"),opts);
+                 directionsDisplay.setMap(map);
+
+                 google.maps.event.addListener(directionsDisplay, 'directions_changed', function(){
+                 });
+                 calcRoute();
+
+
+                  //二点間の経路()
+                function calcRoute() {
+                    // 経由地点を設定
+                    var wayPoints = [
+                    {
+                        location: new google.maps.LatLng(35.7377967, 139.70744979999995)
+                    }
+                    //複数も可能
+                    <!--, {-->
+                        <!--location: new google.maps.LatLng(36.554016559725554, 136.67215079069138)-->
+                    <!--}-->
+                    ];
+
+                    <!--var origin = new google.maps.LatLng({{i.stationFrom.latitude}},{{i.stationFrom.longitude}});-->
+
+                    <!--var destination = new google.maps.LatLng({{i.stationTo.latitude}},{{i.stationTo.longitude}});-->
+
+
+
+                     //それぞれのルートを表示
+                     {% for i in route.route.lineList %}
+                        <!--alert("a");-->
+                        var origin = new google.maps.LatLng({{i.stationFrom.latitude}},{{i.stationFrom.longitude}});
+                        var destination = new google.maps.LatLng({{i.stationTo.latitude}},{{i.stationTo.longitude}});
+                        if("{{i.lineName}}" == "移動"){
+                            root(origin,destination);
+                        } else{
+                            root_line(origin,destination);
+                        }
+                     {% endfor %}
+
+                     <!--root(address,destination);-->
+                     <!--root(waypoint,waypoint2);-->
+                     <!--root(address,waypoint2);-->
+
+                     directionsDisplay.setPanel(document.getElementById("directions-panel"));
+                     directionsDisplay.setPanel(document.getElementById("directions-panel2"));
+                    <!--alert(document.getElementById('{{i.stationFrom.latitude}}').innerText);-->
+
+
+                    //電車による移動時のルート表示(ただし、直線)
+                    function root_line(origin,destination){
+                              latlngs = [
+                                origin,
+                                destination
+                              ];
+                              var Path = new google.maps.Polyline({
+                              path: latlngs,
+                              strokeOpacity: 1.0,
+                            });
+
+                            Path.setMap(map);
+                    }
+
+
+
+                    //徒歩のときのルート表示
+                    function root(origin,destination){
+                             var request = {
+                                origin: origin,
+                                destination: destination,
+                                <!--travelMode: google.maps.DirectionsTravelMode.TRANSIT,-->
+                                travelMode: google.maps.DirectionsTravelMode.WALKING,
+                                unitSystem: google.maps.DirectionsUnitSystem.METRIC,
+                                optimizeWaypoints: true,
+                                avoidHighways: false,
+                                avoidTolls: false,
+                                <!--waypoints :wayPoints-->
+                             };
+                             directionsService.route(request,function(response,status){
+                                 if (status == google.maps.DirectionsStatus.OK){
+                                     var directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+                                     directionsDisplay.setDirections(response);
+                                     directionsDisplay.setRouteIndex(0);
+                                     directionsDisplay.setMap(map);
+                                 }
+                             });
+                    }
+
+
+
+                 }
+
+
+
+                <!--function infowindow(address){-->
+                        <!--var infoWindows = [] ;-->
+                <!---->
+                        <!--// 情報ウィンドウのインスタンスを作成する-->
+                        <!--// [ new google.maps.InfoWindow() ]の引数にオプションオブジェクトを指定する-->
+                        <!--&lt;!&ndash;console.log(latlng);&ndash;&gt;-->
+                        <!--console.log(address);-->
+                        <!--infoWindows[0] = new google.maps.InfoWindow( {-->
+                            <!--content: "メッセージ" ,-->
+                            <!--position: address ,-->
+                        <!--} ) ;-->
+                        <!--// 情報ウィンドウ(のインスタンス)を地図に設置(レンダリング)する-->
+                        <!--infoWindows[0].open( map ) ;-->
+                <!--}-->
+
+                //ルート案内のデータ表示の準備
+                //テスト配列
+                var num = [[1, 3, 5, 7], [2, 4, 6, 8]];
+                <!--alert({{route}});-->
+
+                <!--for(var i= 0; i < num.length; i++){-->
+                    <!--document.getElementById("time").innerHTML = "時間";-->
+                    <!--document.getElementById("place").innerHTML = "場所";-->
+                    <!--document.getElementById("means").innerHTML = "方法";-->
+                    <!--document.getElementById("money").innerHTML = "料金";-->
+
+                    <!--var table = document.getElementById("route_guide");-->
+                    <!--var row = table.insertRow(-1);-->
+                    <!--// セルの挿入-->
+                    <!--var cell1 = row.insertCell(-1);-->
+                    <!--var cell2 = row.insertCell(-1);-->
+                    <!--var cell3 = row.insertCell(-1);-->
+                    <!--var cell4 = row.insertCell(-1);-->
+
+                    <!--//各データの表示-->
+
+                    <!--cell1.innerHTML = num[i][0];-->
+                    <!--cell2.innerHTML = num[i][1];-->
+                    <!--cell3.innerHTML = num[i][2];-->
+                    <!--cell4.innerHTML = num[i][3];-->
+                <!--}-->
+
+        }
+
+
+
+    </script>
+                <!--{% endfor %}-->
+         <dir>
+            {{overview}}
+        </dir>
+              <table border="1" width="1000">
+                {% for j in news %}
+            <tr width="1000">
+                <td width="70">{{j.Source}}</td>
+                <td width="70">{{j.Date}}</td>
+                <td width="200">{{j.Title}}</td>
+                <td width="70">{{j.Url}}</td>
+                <td width="500">{{j.Description}}</td>
+                <!--<td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>-->
+                <!--<td width="70">{{i.stationFrom.time.hour}}時{{i.stationFrom.time.min}}分</td>-->
+                <!--<td width="70">{{i.stationTo.stationName}}</td>-->
+                <!--<td width="70">{{i.lineName}}</td>-->
+                <!--<td id="{{i.stationFrom.latitude}}">{{i.stationFrom.latitude}}</td>-->
+            </tr>
+                {% endfor %}
+            </table>
+  </body>
+</html>
+{% endblock content %}
+
+
